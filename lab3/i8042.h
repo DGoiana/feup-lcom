@@ -7,6 +7,8 @@
   */
 
 #define KBC_IRQ 0x1
+#define TIMER_IRQ 0
+
 
 #define ESC_KEY 0x81
 
