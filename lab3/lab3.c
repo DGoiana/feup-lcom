@@ -4,6 +4,7 @@
 
 #include "i8042.h"
 #include "keyboard.h"
+#include "utils.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -14,7 +15,7 @@ extern uint8_t data;
 uint8_t make;
 int size = 0;
 uint8_t bytes[2];
-
+uint8_t stat;
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -81,14 +82,51 @@ int(kbd_test_scan)() {
   return 0;
 }
 
+#define MAX_NUM_TRIES 10
+
+int (kbc_issue_command)(uint8_t port,uint8_t message) {
+  int num_tries = MAX_NUM_TRIES;
+  while(num_tries) {
+    util_sys_inb(KBC_STATUS_PORT,&stat);
+    if((stat & KBC_IBF) == 0) {
+      sys_outb(port, (uint32_t) message);
+      return 0;
+    }
+    //tickdelay(micros_to_ticks(DELAY_US));
+    num_tries--;
+  }
+  return 1;
+}
+
+int (kbc_read_value)(uint8_t port, uint8_t *message) {
+  int num_tries = MAX_NUM_TRIES;
+  while(num_tries) {
+    if(util_sys_inb(KBC_STATUS_PORT,&stat) != 0) return 1;
+    if((stat & KBC_OBF) && ((stat &(KBC_PAR_ERR | KBC_TO_ERR)) == 0)) {
+      if(util_sys_inb(port,message) != 0) return 1;
+      return 0;
+    }
+    //tickdelay(micros_to_ticks(DELAY_US));
+    num_tries--;
+  }
+  return 1;
+}
+
+int restore_kbc() {
+  uint8_t command_byte;
+  if(kbc_issue_command(KBC_COMMAND_PORT,READ_COMMAND_BYTE) != 0) return 1;
+  if(kbc_read_value(KBC_OUT_BUF,&command_byte) != 0) return 1;
+  
+  command_byte = command_byte | ENABLE_OBF_INT_KEYBOARD;
+
+  if(kbc_issue_command(KBC_COMMAND_PORT,WRITE_COMMAND_BYTE) != 0) return 1;
+  if(kbc_issue_command(KBC_IN_BUF,command_byte) != 0) return 1;
+
+  return 0;
+}
+
 int(kbd_test_poll)() {
   cnt = 0;
-  uint8_t byte_command;
-
-  // READ THE COMMAND BYTE
-  uint8_t cmd = READ_COMMAND_BYTE;
-  kbc_issue_command(cmd);
-  util_sys_inb(KBC_OUT_BUF,&byte_command);
 
   while(data != ESC_KEY) {
     kbc_ih();
@@ -107,21 +145,7 @@ int(kbd_test_poll)() {
     size = 0;
   }
   kbd_print_no_sysinb(cnt);
-
-  cmd |= WRITE_COMMAND_BYTE;
-  byte_command |= ENABLE_OBF_INT_KEYBOARD;
-  kbc_issue_command(cmd);
-
-  uint8_t stat;
-
-  while(1) {
-    util_sys_inb(KBC_STATUS_PORT,&stat);
-    if( (stat & KBC_IBF) == 0 ) {
-      sys_outb(KBC_IN_BUF,( uint32_t ) byte_command);
-      break;
-    }
-  }
-
+  restore_kbc();
   return 0;
 }
 

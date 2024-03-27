@@ -8,8 +8,12 @@
 
 uint8_t stat;
 uint8_t data;
-
 int timer_counter = 0;
+
+void (timer_ih)() {
+  timer_counter++;
+}
+
 
 int hook_id = KBC_IRQ;
 
@@ -21,21 +25,6 @@ void (kbc_ih)() {
       util_sys_inb(KBC_OUT_BUF, &data); /* ass. it returns OK */
     }
     else {
-      return;
-    }
-  }
-  tickdelay(micros_to_ticks(DELAY_US));
-}
-
-void (timer_ih)() {
-  timer_counter++;
-}
-
-void (kbc_issue_command)(uint8_t cmd) {
-  while( 1 ) {
-    util_sys_inb(KBC_STATUS_PORT,&stat);
-    if( (stat & KBC_IBF) == 0 ) {
-      sys_outb(KBC_COMMAND_PORT,( uint32_t ) cmd);
       return;
     }
   }
