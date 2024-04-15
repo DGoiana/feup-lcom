@@ -1,0 +1,6 @@
+#define VBE_CALL 0x4F00
+#define SET_VBE_MODE 0x02
+
+#define LINEAR_FRAMEBUFFER BIT(14)
+
+#define CALL_TO_BIOS 0x10
