@@ -1,15 +1,14 @@
 #include "mouse.h"
 
 uint8_t stat;
-extern uint8_t data;
-extern uint8_t packet[3];
-extern uint8_t size;
-extern uint32_t num_packet;
-extern int mouse_hook_id;
-extern int current_index;
-extern struct packet pp;
-extern bool read_error;
-
+uint8_t data;
+uint8_t packet[3];
+uint8_t size;
+uint32_t num_packet;
+int mouse_hook_id = MOUSE_IRQ;
+int current_index = 0;
+struct packet pp;
+bool read_error;
 
 
 

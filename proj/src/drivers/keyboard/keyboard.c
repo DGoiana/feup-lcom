@@ -1,8 +1,4 @@
-#include <lcom/lcf.h>
-
 #include "keyboard.h"
-#include "i8042.h"
-#include "utils.h"
 
 #define MAX_SIZE 1024
 
