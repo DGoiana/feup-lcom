@@ -1,3 +1,6 @@
+#ifndef _LCOM_MOUSE_H
+#define _LCOM_MOUSE_H
+
 #include <lcom/lcf.h>
 #include "i8042.h"
 
@@ -27,3 +30,5 @@ void (mouse_synch_packet)();
 
 int (next_state)(struct packet pp, int tolerance);
 bool (check_inbound)(int *x,int *y, int x_offset, int y_offset, int tolerance);
+
+#endif

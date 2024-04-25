@@ -31,3 +31,9 @@ send messages
 ## Serial Port
 
 + Responsible for the communication within the chat.
+
+## PROJECT ORGANIZATION
+
++ We'll have to setup a plan to get this done, so we'll first focus on the serial port (MOST IMPORTANT), initial graphic design and keyboard for input.
+
++ After that, we'll focus on the UX. Basically, use the RTC for the time of the message, Timer to blink and continue development in the graphics.

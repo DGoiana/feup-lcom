@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-extern int counter;
+#include "test_drivers/tests.h"
 
 
 int main(int argc, char *argv[]) {
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 
 
 int(proj_main_loop)(int argc,char* argv[]) {
-  printf("Hello World\n");
+  test_mouse();
   return 0;
 }
 
