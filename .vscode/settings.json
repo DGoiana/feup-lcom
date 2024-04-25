@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "lcf.h": "c",
+        "i8254.h": "c",
+        "vg.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

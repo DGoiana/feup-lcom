@@ -13,12 +13,7 @@
 extern size_t hres;
 extern size_t vres;
 extern size_t bytes_per_pixel;
-extern uint8_t Bblock;
-extern uint8_t Gblock;
-extern uint8_t Rblock;
-extern uint8_t Bpos;
-extern uint8_t Gpos;
-extern uint8_t Rpos;
+extern size_t vram_size;
 extern vbe_mode_info_t mode_info;
 
 
@@ -56,7 +51,11 @@ int print_xpm(xpm_map_t xpm, uint16_t x, uint16_t y) {
   uint8_t *sprite = xpm_load(xpm,type,&img);
   for(int i = 0; i < img.height; i++) {
     for(int j = 0; j < img.width;j++) {
-      vg_draw_pixel((uint32_t)*sprite,j+x,i+y);
+      if(vg_draw_pixel((uint32_t)*sprite,j+x,i+y) != 0) {
+        printf("FAILED TO DRAW PIXMAP\n");
+        vg_exit();
+        return 1;
+      }
       sprite++;
     }
   }
@@ -116,6 +115,7 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
     vg_exit();
     return 1;
   }
+  memcpy((void *)video_mem,(void *)frame_buffer,vram_size);
 
   int ipc_status,response;
   message msg;
@@ -158,19 +158,20 @@ int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, ui
 
   uint32_t color;
 
-  uint32_t hsize = mode_info.XResolution / no_rectangles;
-  uint32_t vsize = mode_info.YResolution / no_rectangles;
+  uint32_t hsize = mode_info.XResolution / (no_rectangles);
+  uint32_t vsize = mode_info.YResolution / (no_rectangles);
 
-  for(size_t col = 0; col < no_rectangles; col++) {
+  for(size_t col = 0; col < no_rectangles ; col++) {
     for(size_t row = 0; row < no_rectangles;row++) {
       if(indexed) {
-        color = (first+(row * no_rectangles + col) * step) % (1 << mode_info.BitsPerPixel);
+        color = (first+(col * no_rectangles + row) * step) % (1 << mode_info.BitsPerPixel);
       } else {
-        color = calculate_color(color,first,step,col,row);
+        color = calculate_color(color,first,step,row,col);
       }
       vg_draw_rectangle(row * hsize, col * vsize,hsize,vsize,color);
     }
   }
+  memcpy((void *)video_mem,(void *)frame_buffer,vram_size);
 
   int ipc_status,response;
   message msg;
@@ -209,15 +210,8 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
   if(vg_video_mode(0x105) != 0) return 1;
 
-  enum xpm_image_type type = XPM_INDEXED;
-  xpm_image_t img;
-  uint8_t *sprite = xpm_load(xpm,type,&img);
-  for(int i = 0; i < img.height; i++) {
-    for(int j = 0; j < img.width;j++) {
-      vg_draw_pixel((uint32_t)*sprite,j+x,i+y);
-      sprite++;
-    }
-  }
+  print_xpm(xpm,x,y);
+  memcpy((void *)video_mem,(void *)frame_buffer,vram_size);
 
   int ipc_status,response;
   message msg;
@@ -253,6 +247,9 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
   keyboard_subscribe_int(&kbc_irq_set);
   timer_subscribe_int(&timer_irq_set);
 
+
+  if(timer_set_frequency(TIMER_SEL0,(uint32_t)fr_rate) != 0) return 1;
+
   if(vg_setup(0x105) != 0) {
     vg_exit();
     return 1;
@@ -260,16 +257,21 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
 
   if(vg_video_mode(0x105) != 0) return 1;
 
-  timer_set_frequency(0,fr_rate);
+
 
   int ipc_status,response;
   message msg;
 
   bool horizontal_movement = (xi < xf && yi == yf) ? true : false;
 
-  print_xpm(xpm,xi,yi);
+  enum xpm_image_type type = XPM_INDEXED;
+  xpm_image_t img;
+  xpm_load(xpm,type,&img);  
 
-  while(data != ESC_KEY)  {
+  print_xpm(xpm,xi,yi);
+  memcpy((void *)video_mem,(void *)frame_buffer,vram_size);
+
+  while(data != ESC_KEY && (yi < yf || xi < xf))  {
     if((response=driver_receive(ANY,&msg,&ipc_status))) {
       printf("driver_receive failed with: %d",response);
       continue;
@@ -281,14 +283,16 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
             kbc_ih();
           }
           if(msg.m_notify.interrupts & BIT(timer_irq_set)) {
+            vg_draw_rectangle(xi,yi,img.width,img.height,0xFFFFFF);
             if(horizontal_movement) {
-              if(xi < xf) xi = xi + speed;
+              xi += speed;
               if(xi > xf) xi = xf;
             } else {
-              if(yi < yf) yi = yi + speed;
+              yi += speed;
               if(yi > yf) yi = yf;
             }
-            print_xpm(xpm,xi,yi);
+            if(print_xpm(xpm,xi,yi) != 0) return 1;
+            memcpy((void *)video_mem,(void *)frame_buffer,vram_size);
           }
           break;
         default:
@@ -296,9 +300,13 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
       }
     }
   }
-  keyboard_unsubscribe_int();
-  timer_unsubscribe_int();
+
+  free(frame_buffer);
   vg_exit();
+
+  timer_unsubscribe_int();
+  keyboard_unsubscribe_int();
+
   return 0;
 }
 

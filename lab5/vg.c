@@ -11,8 +11,14 @@ uint32_t (calculate_color)(uint32_t color, uint32_t first, uint8_t step,uint8_t 
   return (red << mode_info.RedFieldPosition) | (green << mode_info.GreenFieldPosition) | (blue << mode_info.BlueFieldPosition);
 }
 
+void alloc_mem_frame_buffer() {
+  frame_buffer = malloc(vram_size);
+  memset(frame_buffer,0,vram_size);
+  return; 
+}
+
 int (vg_draw_pixel)(uint32_t color,uint16_t x,uint16_t y) {
-  uint8_t *pixel_pos = ((uint8_t *)video_mem + ((y*hres + x) * (bytes_per_pixel)));
+  uint8_t *pixel_pos = ((uint8_t *)frame_buffer + ((y*hres + x) * (bytes_per_pixel)));
   //uint32_t new_color = color & (BIT(bytes_per_pixel+1)-1);
   memcpy(pixel_pos,&color,bytes_per_pixel);
   return 0;
@@ -50,7 +56,6 @@ int (vg_video_mode)(uint16_t mode) {
 }
   
 int (vg_setup)(uint16_t mode) {
-  size_t vram_size;
   int r;
 
   memset(&mode_info,0,sizeof(mode_info));
@@ -78,5 +83,7 @@ int (vg_setup)(uint16_t mode) {
     panic("couldn’t map video memory"); 
 
 
+  alloc_mem_frame_buffer();
+  
   return 0;
 }

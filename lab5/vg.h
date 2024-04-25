@@ -3,7 +3,9 @@
 
 size_t hres;
 size_t vres;
+size_t vram_size;
 size_t bytes_per_pixel;
+void *frame_buffer;
 void *video_mem;
 vbe_mode_info_t mode_info;
 
@@ -15,3 +17,4 @@ int (vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color);
 
 int (vg_video_mode)(uint16_t mode);
 int (vg_setup)(uint16_t mode);
+void (alloc_mem_frame_buffer)();
