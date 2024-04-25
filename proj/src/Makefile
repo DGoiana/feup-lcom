@@ -5,7 +5,7 @@
 
 
 # name of the program (Minix service)
-PROG=lab3 
+PROG=proj 
 
 # source code files to be compiled
 SRCS = main.cpp keyboard.c mouse.c timer.c utils.c

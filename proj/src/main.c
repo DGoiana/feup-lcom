@@ -13,11 +13,11 @@ int main(int argc, char *argv[]) {
 
   // enables to log function invocations that are being "wrapped" by LCF
   // [comment this out if you don't want/need it]
-  lcf_trace_calls("/home/lcom/g1/labs/proj/trace.txt");
+  lcf_trace_calls("/home/lcom/labs/g1/proj/trace.txt");
 
   // enables to save the output of printf function calls on a file
   // [comment this out if you don't want/need it]
-  lcf_log_output("/home/lcom/g1/labs/proj/output.txt");
+  lcf_log_output("/home/lcom/labs/g1/proj/output.txt");
 
   // handles control over to LCF
   // [LCF handles command line arguments and invokes the right function]
@@ -31,4 +31,9 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
+
+int(proj_main_loop)(int argc,char* argv[]) {
+  printf("Hello World\n");
+  return 0;
+}
 
