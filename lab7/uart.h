@@ -1,0 +1,69 @@
+#include <lcom/lcf.h>
+
+// Base Addresses
+#define SER_BASE_ADDR_1 0x3F8
+#define SE_BASE_ADDR_2 0x2F8
+
+// Serial Port Registers
+#define SER_ADDR_RX_BUF 0x00
+#define SER_ADDR_TX_BUF 0x00
+
+#define SER_ADDR_IER 0x01
+
+#define SER_ADDR_IIR 0x02
+#define SER_ADDR_FCR 0x02
+#define SER_ADDR_LCR 0x03
+#define SER_ADDR_LCS 0x05
+
+#define SER_ADDR_DL_LSB 0x00
+#define SER_ADDR_DL_MSB 0x01
+
+// IRQ's for Serial Ports
+
+#define SER_IRQ_0 0x04
+#define SER_IRQ_1 0x03
+
+
+// LCR BITS
+#define SER_LCR_WORD_LENGTH(n)((n-5) & 0x03)
+#define SER_LCR_TWO_STOP_BITS BIT(2)
+#define SER_LCR_PARITY_NONE 0x00
+#define SER_LCR_PARITY_ODD BIT(3)
+#define SER_LCR_PARITY_EVEN BIT(3) | BIT(4)
+#define SER_LCR_PARITY_ONE BIT(3) | BIT(5)
+#define SER_LCR_PARITY_ZERO BIT(3) | BIT(4) | BIT(5)
+#define SER_LCR_SEL_DL BIT(7)
+
+// LSR BITS
+#define SEL_LSR_RX_RDY BIT(0)
+#define SEL_LSR_OVERRUN_ERR BIT(1)
+#define SEL_LSR_PARITY_ERR BIT(2)
+#define SEL_LSR_FRAMING_ERR BIT(3)
+#define SEL_LSR_TXH_EMPTY BIT(5)
+
+
+// IER
+#define SEL_IER_ENABLE_RX_INT BIT(0)
+#define SEL_IER_ENABLE_TX_EMPTY_INT BIT(1)
+#define SEL_IER_ENABLE_RX_LSR_INT BIT(2) // FOR ERRORS
+
+
+// IRR
+#define SEL_IIR_NOT_PENDING BIT(0)
+#define SEL_IIR_MODEM_ST 0x00
+#define SEL_IIR_TX_EMPTY BIT(1)
+#define SEL_IIR_CHAR_TIMEOUT BIT(3)
+#define SEL_IIR_RX_AVAILABLE BIT(2)
+#define SEL_IIR_LSR BIT(1) | BIT(2)
+#define SEL_IIR_NO_FIFO BIT(0)
+#define SEL_IIR_UNUSABLE_FIFO BIT(7)
+#define SEL_IIR_ENABLED_FIFO BIT(7) | BIT(6)
+
+// FCR
+#define SEL_FCR_ENABLE_FIFO BIT(0)
+#define SEL_FCR_CLEAR_RX_FIFO BIT(1)
+#define SEL_FCR_CREAR_TX_FIFO BIT(2)
+#define SEL_FCR_TR_LEVEL_1 BIT(0)
+#define SEL_FCR_TR_LEVEL_4 BIT(6)
+#define SEL_FCR_TR_LEVEL_8 BIT(7)
+#define SEL_FCR_TR_LEVEL_14 BIT(7) | BIT(6)
