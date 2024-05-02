@@ -1,5 +1,4 @@
-#ifndef _LCOM_UTILS_C_
-#define _LCOM_UTILS_C_
+
 
 #include <lcom/lcf.h>
 #include <stdint.h>
@@ -27,4 +26,3 @@ int (util_sys_inb)(int port, uint8_t *value) {
   return ret;
 }
 
-#endif

@@ -1,3 +1,10 @@
+#ifndef _LCOM_SERIAL_TESTS_H_
+#define _LCOM_SERIAL_TESTS_H_
+
+#include "../../drivers/serial/serial.h"
+#include "../../drivers/utils/utils.h"
+#include <lcom/lcf.h>
+
 int ser_test_conf(unsigned short base_addr);
 
 int ser_test_set(unsigned short base_addr, unsigned long bits, unsigned long stop, 
@@ -10,3 +17,5 @@ int ser_test_int(/* details to be provided */) ;
 
 int ser_test_fifo(/* details to be provided */);
 
+
+#endif

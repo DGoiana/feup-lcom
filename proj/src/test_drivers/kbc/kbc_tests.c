@@ -1,4 +1,4 @@
-#include "tests.h"
+#include "kbc_tests.h"
 
 /* FOR TESTING PURPOSES */
 int (test_timer)() {

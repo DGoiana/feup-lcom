@@ -1,0 +1,54 @@
+@lcflib.a:2019, lcf_start
+  proj_main_loop(argc, argv)
+> proj_main_loop(0, [NULL])
+  @/home/lcom/labs/g1/proj/src/drivers/serial//serial.c:101, ser_set
+    sys_outb((int )(base_addr + SER_ADDR_LCR), lcr_cfg)
+  > sys_outb(0x3fb, 0x08 = 0b00001000)
+  @/home/lcom/labs/g1/proj/src/drivers/serial//serial.c:108, ser_set
+    util_get_LSB(rate, &dl_lsb)
+  > util_get_LSB(0x000a, addr: 0xeffff773)
+  < util_get_LSB(0x000a, addr: 0xeffff773 [0x0a]) -> (ret: 0)
+  @/home/lcom/labs/g1/proj/src/drivers/serial//serial.c:109, ser_set
+    util_get_MSB(rate, &dl_msb)
+  > util_get_MSB(0x000a, addr: 0xeffff772)
+  < util_get_MSB(0x000a, addr: 0xeffff772 [0x00]) -> (ret: 0)
+  @/home/lcom/labs/g1/proj/src/drivers/serial//serial.c:111, ser_set
+    sys_outb((base_addr + SER_ADDR_DL_LSB), dl_lsb)
+  > sys_outb(0x3f8, 0x0a = 0b00001010)
+  @/home/lcom/labs/g1/proj/src/drivers/serial//serial.c:114, ser_set
+    sys_outb((base_addr + SER_ADDR_DL_MSB), dl_msb)
+  > sys_outb(0x3f9, 0x00 = 0b00000000)
+  @/home/lcom/labs/g1/proj/src/drivers/serial//serial.c:119, ser_set
+    sys_outb((int)(base_addr + SER_ADDR_LCR), lcr_cfg)
+  > sys_outb(0x3fb, 0x08 = 0b00001000)
+  @/home/lcom/labs/g1/proj/src/drivers/utils//utils.c:24, util_sys_inb
+    sys_inb(port, &long_value)
+  > sys_inb(0x3fb, addr: 0xeffff730)
+  < sys_inb(0x3fb, addr: 0xeffff730 [0x08 = 0b00001000])
+  @/home/lcom/labs/g1/proj/src/drivers/utils//utils.c:24, util_sys_inb
+    sys_inb(port, &long_value)
+  > sys_inb(0x3f9, addr: 0xeffff730)
+  < sys_inb(0x3f9, addr: 0xeffff730 [0x00 = 0b00000000])
+  @/home/lcom/labs/g1/proj/src/drivers/serial//serial.c:55, ser_print_conf
+    printf("\nWHOLE LCR STAT: %x",lcr_stat)
+    "
+WHOLE LCR STAT: 8"
+  @/home/lcom/labs/g1/proj/src/drivers/serial//serial.c:56, ser_print_conf
+    printf("\nWHOLE IER STAT: %x",ier_stat)
+    "
+WHOLE IER STAT: 0"
+  @/home/lcom/labs/g1/proj/src/drivers/serial//serial.c:57, ser_print_conf
+    printf("\nWORD SIZE: %d\nNUMBER OF STOP BITS: %d\nDLAB: %d\n",word_length,no_stop_bits,dlab)
+    "
+WORD SIZE: 5
+NUMBER OF STOP BITS: 1
+DLAB: 0"
+  @/home/lcom/labs/g1/proj/src/drivers/serial//serial.c:63, ser_print_conf
+    printf("PARITY:ODD\n")
+    "PARITY:ODD"
+  @/home/lcom/labs/g1/proj/src/drivers/serial//serial.c:69, ser_print_conf
+    printf("RX_RECEIVE: %d\nTX_EMPTY: %d\nLSR_INT: %d\n",rx_received_int,tx_empty_int,rx_lsr_int)
+    "RX_RECEIVE: 0
+TX_EMPTY: 0
+LSR_INT: 0"
+< proj_main_loop(0, [NULL]) -> (ret: 0)

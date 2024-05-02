@@ -1,5 +1,7 @@
 #include <lcom/lcf.h>
 
+#define SER_MAX_BIT_RATE 115200
+
 // Base Addresses
 #define SER_BASE_ADDR_1 0x3F8
 #define SE_BASE_ADDR_2 0x2F8
@@ -25,7 +27,10 @@
 
 
 // LCR BITS
-#define SER_LCR_WORD_LENGTH(n)((n-5) & 0x03)
+#define SER_LCR_WORD_LENGTH_5 0x00
+#define SER_LCR_WORD_LENGTH_6 BIT(0)
+#define SER_LCR_WORD_LENGTH_7 BIT(1)
+#define SER_LCR_WORD_LENGTH_8 BIT(0) | BIT(1)
 #define SER_LCR_TWO_STOP_BITS BIT(2)
 #define SER_LCR_PARITY_NONE 0x00
 #define SER_LCR_PARITY_ODD BIT(3)
@@ -67,3 +72,23 @@
 #define SEL_FCR_TR_LEVEL_4 BIT(6)
 #define SEL_FCR_TR_LEVEL_8 BIT(7)
 #define SEL_FCR_TR_LEVEL_14 BIT(7) | BIT(6)
+
+
+// CONFIG OPTIONS 
+
+#define COM1_BASE 0x3F8
+#define COM2_BASE 0x2F8
+
+#define WORD_LENGTH_5 5
+#define WORD_LENGTH_6 6
+#define WORD_LENGTH_7 7
+#define WORD_LENGTH_8 8
+
+#define NUM_STOP_1 1
+#define NUM_STOP_2 2
+
+#define PARITY_NONE -1
+#define PARITY_EVEN 0
+#define PARITY_ODD 1
+
+#define VALID_RATE(rate) ((rate)%SER_MAX_BIT_RATE == 0)
