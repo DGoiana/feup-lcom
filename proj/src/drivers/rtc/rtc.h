@@ -4,4 +4,6 @@
 #include <lcom/lcf.h>
 #include "i8254.h"
 
+int (rtc_get_conf)(uint8_t *conf);
+
 #endif
