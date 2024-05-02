@@ -39,6 +39,7 @@ int(proj_main_loop)(int argc,char* argv[]) {
   char *strings[] = {"goiana cringe lmao\n"};
   //ser_test_poll(COM1_BASE, atoi(argv[0]) ,WORD_LENGTH_8, NUM_STOP_2, PARITY_EVEN, BIT_RATE, length,strings);
   ser_test_fifo(COM1_BASE, atoi(argv[0]) ,WORD_LENGTH_8, NUM_STOP_2, PARITY_EVEN, BIT_RATE, length,strings);
+  test_graphic();
   return 0;
 }
 

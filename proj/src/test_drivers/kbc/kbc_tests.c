@@ -110,3 +110,14 @@ int (test_mouse)() {
 
   return 0;
 }
+
+int (test_graphic)(){
+  if(initFrameBuffer(0x115) != 0) return 1;
+  if(startVideoMode(0x115) != 0) return 1;
+  paintBackground();
+
+  sleep(5);
+
+  if(exitVideoMode() != 0) return 1;
+  return 0;
+}
