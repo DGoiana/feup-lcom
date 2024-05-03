@@ -15,8 +15,6 @@ int (test_keyboard)() {
   int size = 0;
   uint8_t bytes[2];
 
-
-
   uint8_t irq_set;
   keyboard_subscribe_int(&irq_set);
 
@@ -114,9 +112,11 @@ int (test_mouse)() {
 int (test_graphic)(){
   if(initFrameBuffer(0x115) != 0) return 1;
   if(startVideoMode(0x115) != 0) return 1;
-  paintBackground();
 
-  sleep(5);
+  //paint backroung to white and draw rectangles
+  if(formatBackground() != 0) return 1;
+
+  sleep(10);
 
   if(exitVideoMode() != 0) return 1;
   return 0;
