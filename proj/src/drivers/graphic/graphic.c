@@ -84,6 +84,5 @@ int formatBackground(){
     drawRectangle(0, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5);
     drawRectangle(x_res * 0.75, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5);
     drawRectangle(x_res * 0.95, y_res * 0.0175, y_res * 0.04, y_res * 0.04, 0xf53400);
-    draw_xpm((xpm_map_t) a_xpm[1], x_res * 0.5, y_res * 0.5);
     return 0;
 }

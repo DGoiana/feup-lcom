@@ -10,6 +10,37 @@ int (test_timer)() {
   return 0;
 }
 
+int (wait_for_esc_key)() {
+  extern uint8_t data;
+
+  uint8_t irq_set;
+  keyboard_subscribe_int(&irq_set);
+
+  int ipc_status,r;
+  message msg;
+
+
+  while(data != ESC_KEY)  {
+    if((r=driver_receive(ANY,&msg,&ipc_status))) {
+      printf("driver_receive failed with: %d",r);
+      continue;
+    }
+    if(is_ipc_notify(ipc_status)) {
+      switch(_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE:
+          if(msg.m_notify.interrupts & BIT(irq_set)) {
+            kbc_ih();
+          }
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  keyboard_unsubscribe_int();
+  return 0;
+}
+
 int (test_keyboard)() {
   extern uint8_t data;
   int size = 0;
@@ -40,7 +71,8 @@ int (test_keyboard)() {
             else {
               bytes[size] = data;
             }
-            kbd_print_scancode(!(bytes[size] & MAKE_BIT),size+1,bytes);
+            //kbd_print_scancode(!(bytes[size] & MAKE_BIT),size+1,bytes);
+            if(!(bytes[size] & MAKE_BIT)) printf("%c", retrieve_letter(bytes[size]));
             size = 0;
           }
           break;
@@ -116,7 +148,7 @@ int (test_graphic)(){
   //paint backroung to white and draw rectangles
   if(formatBackground() != 0) return 1;
 
-  sleep(10);
+  wait_for_esc_key();
 
   if(exitVideoMode() != 0) return 1;
   return 0;
