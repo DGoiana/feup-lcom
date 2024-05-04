@@ -6,6 +6,7 @@
 
 #include "test_drivers/kbc/kbc_tests.h"
 #include "test_drivers/serial/serial_tests.h"
+#include "drivers/serial/uart.h"
 
 
 int main(int argc, char *argv[]) {
@@ -35,8 +36,9 @@ int main(int argc, char *argv[]) {
 
 
 int(proj_main_loop)(int argc,char* argv[]) {
-
-  if(ser_test_set(COM1_BASE,5,1,1,10) != 0) return 1;
+  int length = 1;
+  char *strings[] = {"Lorem Ipsum"};
+  ser_test_poll(COM1_BASE, atoi(argv[0]) ,WORD_LENGTH_8, NUM_STOP_2, PARITY_EVEN, BIT_RATE, length,strings);
   return 0;
 }
 

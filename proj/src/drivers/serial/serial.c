@@ -1,5 +1,7 @@
 #include "serial.h"
 
+int serial_hook_id = IRQ_COM1;
+
 int (ser_print_conf)(unsigned short base_addr) {
     uint8_t lcr_stat;
     uint8_t ier_stat;
@@ -34,9 +36,9 @@ int (ser_print_conf)(unsigned short base_addr) {
         printf("failed to read IER from base addr: %u",base_addr);
         return 1;
     }
-    uint8_t rx_received_int = ier_stat & SEL_IER_ENABLE_RX_INT;
-    uint8_t tx_empty_int = (ier_stat & SEL_IER_ENABLE_TX_EMPTY_INT) >> 1;
-    uint8_t rx_lsr_int = (ier_stat & SEL_IER_ENABLE_RX_LSR_INT) >> 2;
+    uint8_t rx_received_int = ier_stat & SER_IER_ENABLE_RX_INT;
+    uint8_t tx_empty_int = (ier_stat & SER_IER_ENABLE_TX_EMPTY_INT) >> 1;
+    uint8_t rx_lsr_int = (ier_stat & SER_IER_ENABLE_RX_LSR_INT) >> 2;
 
     if(dlab) {
         if(util_sys_inb(base_addr + SER_ADDR_DL_LSB, &dl_lsb) != 0) {
@@ -57,14 +59,10 @@ int (ser_print_conf)(unsigned short base_addr) {
     printf("\nWORD SIZE: %d\nNUMBER OF STOP BITS: %d\nDLAB: %d\n",word_length,no_stop_bits,dlab); 
     switch (parity)
     {
-    case 0:
-        printf("PARITY:NONE\n");break;
-    case 1:
-        printf("PARITY:ODD\n");break;
-    case 3:
-        printf("PARITY:EVEN\n");break;
-    default:
-        break;
+    case 0: printf("PARITY:NONE\n");break;
+    case 1: printf("PARITY:ODD\n");break;
+    case 3: printf("PARITY:EVEN\n");break;
+    default: break;
     }
     printf("RX_RECEIVE: %d\nTX_EMPTY: %d\nLSR_INT: %d\n",rx_received_int,tx_empty_int,rx_lsr_int);
     
@@ -75,16 +73,11 @@ int (ser_set)(unsigned short base_addr,unsigned long bits,unsigned long stop,lon
     uint8_t lcr_cfg = 0x00;
     switch (bits)
     {
-    case 5:
-        lcr_cfg |= SER_LCR_WORD_LENGTH_5; break;
-    case 6:
-        lcr_cfg |= SER_LCR_WORD_LENGTH_6; break;
-    case 7:
-        lcr_cfg |= SER_LCR_WORD_LENGTH_7; break;
-    case 8:
-        lcr_cfg |= SER_LCR_WORD_LENGTH_8; break;
-    default:
-        printf("invalid words length\n"); return 1;
+    case 5: lcr_cfg |= SER_LCR_WORD_LENGTH_5; break;
+    case 6: lcr_cfg |= SER_LCR_WORD_LENGTH_6; break;
+    case 7: lcr_cfg |= SER_LCR_WORD_LENGTH_7; break;
+    case 8: lcr_cfg |= SER_LCR_WORD_LENGTH_8; break;
+    default: printf("invalid words length\n"); return 1;
     }
 
     if(stop == 2) lcr_cfg |= SER_LCR_TWO_STOP_BITS;
@@ -119,6 +112,128 @@ int (ser_set)(unsigned short base_addr,unsigned long bits,unsigned long stop,lon
     if(sys_outb((int)(base_addr + SER_ADDR_LCR),lcr_cfg) != 0){
         printf("failed to reset LCR\n"); return 1;
     }
-    
     return 0;
+}
+
+int (ser_send_poll)(unsigned short base_addr,char c){
+    uint8_t lsr;
+    uint8_t num_tries = SER_MAX_TRIES;
+    if(util_sys_inb(base_addr + SER_ADDR_LSR,&lsr) != 0) {
+        printf("failed to read LSR.\n"); return 1;
+    } else { 
+        if( lsr & (SER_LSR_OVERRUN_ERR | SER_LSR_PARITY_ERR | SER_LSR_FRAMING_ERR)) {
+            printf("failed via error\n"); return 1;
+        }
+    }
+    while(num_tries && !(lsr & SER_LSR_TX_RDY)) {
+        util_sys_inb(base_addr + SER_ADDR_LSR,&lsr);
+        tickdelay(micros_to_ticks(DELAY_US));
+        num_tries--;
+    }
+    if(num_tries == 0 && !(lsr & SER_LSR_TX_RDY )) {
+        printf("transmit not ready\n");
+        return 1;
+    } else {
+        sys_outb(base_addr + SER_ADDR_TX_BUF,c);
+    }
+    return 0;
+}
+
+int (ser_receive_poll)(unsigned short base_addr,char *c) {
+    uint8_t lsr;
+    uint8_t value;
+    uint8_t num_tries = SER_MAX_TRIES;
+    if(util_sys_inb(base_addr + SER_ADDR_LSR,&lsr) != 0) {
+        printf("failed to read LSR.\n"); return 1;
+    } else { 
+        if( lsr & (SER_LSR_OVERRUN_ERR | SER_LSR_PARITY_ERR | SER_LSR_FRAMING_ERR)) {
+            printf("failed via error\n"); return 1;
+        }
+    }
+    while(num_tries && !(lsr & SER_LSR_RX_RDY)) {
+        util_sys_inb(base_addr + SER_ADDR_LSR,&lsr);
+        tickdelay(micros_to_ticks(DELAY_US));
+        num_tries--;
+    }
+    do {
+        if(num_tries == 0 && !(lsr & SER_LSR_RX_RDY)) {
+            return 2;
+        } else {
+            util_sys_inb(base_addr + SER_ADDR_RX_BUF, &value);
+            *c = (char) value;
+        }
+    } while(value == BIT_RATE);
+    return 0;
+}
+
+int (ser_subscribe_int)(uint8_t *bit_no) {
+    *bit_no = IRQ_COM1; // TODO
+    if(sys_irqsetpolicy(IRQ_COM1,IRQ_REENABLE, &serial_hook_id) != 0) return 1;
+    return 0;
+}
+
+int (ser_unsubscribe_int)() {
+    if(sys_irqrmpolicy(&serial_hook_id) != 0) return 1;
+    return 0;
+}
+
+/*
+    READ THE IER
+    UPDATE THE IER CONTENTS
+    SEND THE NEW IER
+*/
+int (ser_enable_rx_int)(unsigned short base_addr) {
+    uint8_t ier;
+    if(util_sys_inb(base_addr + SER_ADDR_IER,&ier) != 0) {
+        printf("failed to read ier\n");
+        return 1;
+    }
+    ier |= (SER_IER_ENABLE_RX_INT | SER_IER_ENABLE_RX_LSR_INT);
+    if(sys_outb(base_addr + SER_ADDR_IER,ier) != 0) {
+        printf("failed to update ier\n");
+        return 1;
+    }
+    return 0;
+}
+
+
+/*
+    READ THE IIR
+    INTERPRET IT
+    ACCORDING TO THE TYPE OF INTERRUPT
+    FOR NOW, PRINT THE RECEIVE DATA ON INTERRUPT
+*/
+int (ser_ih)(unsigned short base_addr) {
+    uint8_t iir;
+    uint8_t data;
+    uint8_t lsr;
+
+    if(util_sys_inb(base_addr + SER_ADDR_IIR,&iir) != 0) {
+        printf("failed to read irr\n");
+        return 1;
+    }
+    if((iir & SER_IIR_NOT_PENDING)) {
+        printf("iir not pending");
+        return 1;
+    }
+    if(iir & SER_IIR_CHAR_TIMEOUT) {
+        printf("failed to read char\n");
+        return 0;
+    }
+    if(iir & SER_IIR_RX_AVAILABLE) {
+        if(util_sys_inb(base_addr + SER_ADDR_LSR,&data) != 0) {
+            printf("failed to read data\n"); return 1;
+        }
+        printf("%c\n",data);
+        return 0;
+    }
+    if(iir & SER_IIR_LSR) {
+        if(util_sys_inb(base_addr + SER_ADDR_LSR, &lsr) != 0) {
+            printf("failed to read lsr\n"); return 1;
+        }
+        if(lsr & (SER_LSR_OVERRUN_ERR | SER_LSR_PARITY_ERR | SER_LSR_FRAMING_ERR)) {
+            printf("LSR ERROR \n"); return 0;
+        }
+    }
+    return 1;
 }

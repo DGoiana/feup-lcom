@@ -6,6 +6,8 @@
         "uart.h": "c",
         "lcf.h": "c",
         "serial_tests.h": "c",
-        "mouse.h": "c"
+        "mouse.h": "c",
+        "queue": "c",
+        "random": "c"
     }
 }
