@@ -3,6 +3,6 @@
 
 #include <lcom/lcf.h>
 
-char retrieve_letter(u8_t scan_code);
+int retrieve_letter(u8_t scan_code);
 
 #endif

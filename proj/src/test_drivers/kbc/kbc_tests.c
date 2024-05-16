@@ -1,4 +1,5 @@
 #include "kbc_tests.h"
+#include "../assets/letters.xpm"
 
 /* FOR TESTING PURPOSES */
 int (test_timer)() {
@@ -6,7 +7,7 @@ int (test_timer)() {
   enum timer_status_field field = tsf_all;
 
   timer_get_conf(TIMER_SEL0,&st);
-  timer_display_conf(TIMER_SEL0,st,field);
+    timer_display_conf(TIMER_SEL0,st,field);
   return 0;
 }
 
@@ -19,6 +20,7 @@ int (wait_for_esc_key)() {
   int ipc_status,r;
   message msg;
 
+  int text[100];
 
   while(data != ESC_KEY)  {
     if((r=driver_receive(ANY,&msg,&ipc_status))) {
@@ -30,6 +32,9 @@ int (wait_for_esc_key)() {
         case HARDWARE:
           if(msg.m_notify.interrupts & BIT(irq_set)) {
             kbc_ih();
+            int i = retrieve_letter(data);
+            text.insert()
+            update_buffer(text);
           }
           break;
         default:
