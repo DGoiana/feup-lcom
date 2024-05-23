@@ -96,7 +96,7 @@ extern uint8_t data;
 extern uint8_t packet[3];
 extern uint8_t size;
 extern uint32_t num_packet;
-uint32_t cnt  = 1000;
+uint32_t cnt  = 500;
 extern int current_index;
 extern struct packet pp;
 extern bool read_error;
@@ -134,18 +134,12 @@ int (test_mouse)() {
             mouse_synch_packet();
             if(current_index == 3) {
               mouse_build_packet();
-              mouse_print_packet(&pp);
               num_packet++;
-              if(num_packet == 1) {
-                x = pp.delta_x;
-                y = pp.delta_y;
-              } else {
-                x += pp.delta_x;
-                y -= pp.delta_y;
-              }
-              printf("pos: %d %d\n",x,y);
+              x = MIN(MAX(pp.delta_x + x,0),x_res - 10);
+              y = MIN(MAX(abs(pp.delta_y - y),0),y_res - 110);
+              //printf("%d %d\n",x,y);
               reset_screen();
-              draw_mouse(&x,&y);
+              draw_mouse(x,y);
               current_index = 0;
             }
           }
@@ -156,7 +150,7 @@ int (test_mouse)() {
     }
   }
 
-
+  free(frame_buffer);
   if(exitVideoMode() != 0) return 1;
 
 

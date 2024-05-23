@@ -2,11 +2,11 @@
 #include "../../assets/letters.xpm"
 #include "../../assets/mouse.xpm"
 
-u32_t bytesPerPixel;
-u16_t y_res;
-u16_t x_res;
-void *frame_buffer;
-uint32_t vram_size;
+void alloc_mem_frame_buffer() {
+    frame_buffer = malloc(vram_size);
+    memset(frame_buffer,0,vram_size);
+    return;
+}
 
 int startVideoMode(u16_t mode){
     reg86_t reg;
@@ -25,7 +25,6 @@ int exitVideoMode(){
     reg.ah = 0x00;
     reg.al = 0x03;
     if(sys_int86(&reg) != OK) return 1;
-    free(frame_buffer);
     return 0;
 }
 
@@ -45,8 +44,9 @@ int initFrameBuffer(u16_t mode){
 
     if(sys_privctl(SELF, SYS_PRIV_ADD_MEM, &address) != 0) return 1;
 
-    videoMem = vm_map_phys(SELF, (void*) address.mr_base, vram_size);
-    frame_buffer = malloc(vram_size);
+    video_mem = vm_map_phys(SELF, (void*) address.mr_base, vram_size);
+
+    alloc_mem_frame_buffer();
 
     return 0;
 }
@@ -88,38 +88,36 @@ int update_buffer(int *text){
     u16_t y = 0;
     void* buffer = malloc(x_res * 0.4 + y_res * 0.05 + bytesPerPixel);
     for(uint i = 0; i < sizeof(text) / sizeof(text[0]); i++){
-        draw_xpm((xpm_map_t) a_xpm[text[i]], x, y,videoMem);
+        draw_xpm((xpm_map_t) a_xpm[text[i]], x, y,video_mem);
         if(x + 12 > x_res * 0.7){
             x = x_res * 0.3;
             y += 10;
         }
         else x += 12;
     }
-    u8_t* pos = (u8_t *)videoMem + (int)((x_res * y_res * 0.9 + (x_res * 0.3)) * bytesPerPixel);
+    u8_t* pos = (u8_t *)video_mem + (int)((x_res * y_res * 0.9 + (x_res * 0.3)) * bytesPerPixel);
     memcpy(pos, buffer, x_res * 0.4 + y_res * 0.05 + bytesPerPixel);
     return 0;
 }
 
 int formatBackground(){
-    drawRectangle(0, 0, x_res, y_res, 0xFFFFFF, videoMem);
-    drawRectangle(0, 0, x_res, y_res * 0.075, 0x57ACEA, videoMem);
-    drawRectangle(0, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, videoMem);
-    drawRectangle(x_res * 0.75, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, videoMem);
-    drawRectangle(x_res * 0.95, y_res * 0.0175, y_res * 0.04, y_res * 0.04, 0xf53400, videoMem);
-    drawRectangle(x_res * 0.3, y_res * 0.9, x_res* 0.4, y_res * 0.05, 0xd8e0e5, videoMem);
+    drawRectangle(0, 0, x_res, y_res, 0xFFFFFF, video_mem);
+    drawRectangle(0, 0, x_res, y_res * 0.075, 0x57ACEA, video_mem);
+    drawRectangle(0, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, video_mem);
+    drawRectangle(x_res * 0.75, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, video_mem);
+    drawRectangle(x_res * 0.95, y_res * 0.0175, y_res * 0.04, y_res * 0.04, 0xf53400, video_mem);
+    drawRectangle(x_res * 0.3, y_res * 0.9, x_res* 0.4, y_res * 0.05, 0xd8e0e5, video_mem);
     return 0;
 }
 
-int draw_mouse(int *x,int *y){
-    *x = MAX(0,*x) > x_res-100 ? x_res-100 : MAX(0,*x);
-    *y = MAX(0,*y) > y_res-100 ? y_res-100 : MAX(0,*y);
-    draw_xpm((xpm_map_t) mouse_xpm ,(u16_t)*x,(u16_t)*y,frame_buffer);
-    memcpy(frame_buffer,videoMem,vram_size);
+int draw_mouse(int x,int y){
+    draw_xpm((xpm_map_t) mouse_xpm ,(u16_t)x,(u16_t)y,frame_buffer);
+    memcpy((void *)video_mem,(void *)frame_buffer,vram_size);
     return 0;
 }
 
 int reset_screen() {
     drawRectangle(0,0,x_res,y_res,0x0,frame_buffer);
-    memcpy(frame_buffer,videoMem,vram_size);
+    memcpy((void *)video_mem,(void *)frame_buffer,vram_size);
     return 0;
 }

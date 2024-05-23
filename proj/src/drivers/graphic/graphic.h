@@ -6,7 +6,12 @@
 #include "math.h"
 
 vbe_mode_info_t mode_info;
-void* videoMem;
+u32_t bytesPerPixel;
+u16_t y_res;
+u16_t x_res;
+void *frame_buffer;
+void* video_mem;
+uint32_t vram_size;
 
 int startVideoMode(u16_t mode);
 int initFrameBuffer(u16_t mode);
@@ -17,7 +22,7 @@ int exitVideoMode();
 int formatBackground();
 int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer);
 int update_buffer(int text[]);
-int draw_mouse(int *x,int *y);
+int draw_mouse(int x,int y);
 int reset_screen();
 
 #endif
