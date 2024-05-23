@@ -19,5 +19,16 @@ int (rtc_test_conf)(void) {
 } 
 
 int (rtc_test_date)(void) {
+    DATE d;
+
+    if (rtc_get_date_decimal(&d) != 0) {
+        printf("Error when getting date...\n");
+        return 1;
+    }
+
+    printf("%d:%d:%d\n", d.hours, d.minutes, d.seconds);
+    printf("Day %d of the %d month, year 20%d\n", d.day_of_month, d.month, d.year);
+
+    return 0;
     
 }

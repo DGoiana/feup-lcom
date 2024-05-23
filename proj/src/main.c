@@ -35,8 +35,7 @@ int main(int argc, char *argv[]) {
 
 
 int(proj_main_loop)(int argc,char* argv[]) {
-
-  if(rtc_test_conf() != 0) return 1;
+  if(rtc_test_date() != 0) return 1;
   return 0;
 }
 
