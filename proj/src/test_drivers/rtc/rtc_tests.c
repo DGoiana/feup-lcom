@@ -17,3 +17,7 @@ int (rtc_test_conf)(void) {
 
     return 0;
 } 
+
+int (rtc_test_date)(void) {
+    
+}
