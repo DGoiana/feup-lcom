@@ -1,10 +1,4 @@
-
-WHOLE LCR STAT: 8
-WHOLE IER STAT: 0
-WORD SIZE: 5
-NUMBER OF STOP BITS: 1
-DLAB: 0
-PARITY:ODD
-RX_RECEIVE: 0
-TX_EMPTY: 0
-LSR_INT: 0
+Register value: 26
+Register value: 2
+Register value: 0
+Register value: 80
