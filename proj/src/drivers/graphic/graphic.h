@@ -1,7 +1,9 @@
 #ifndef _LCOM_GRAPHIC_H
 #define _LCOM_GRAPHIC_H
 
+
 #include <lcom/lcf.h>
+#include "math.h"
 
 vbe_mode_info_t mode_info;
 void* videoMem;
@@ -15,5 +17,7 @@ int exitVideoMode();
 int formatBackground();
 int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer);
 int update_buffer(int text[]);
+int draw_mouse(int *x,int *y);
+int reset_screen();
 
 #endif

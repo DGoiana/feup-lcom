@@ -19,8 +19,9 @@ int (wait_for_esc_key)() {
 
   int ipc_status,r;
   message msg;
+  int index = 0;
 
-  int text[100];
+  int text[100] = {-1};
 
   while(data != ESC_KEY)  {
     if((r=driver_receive(ANY,&msg,&ipc_status))) {
@@ -33,7 +34,8 @@ int (wait_for_esc_key)() {
           if(msg.m_notify.interrupts & BIT(irq_set)) {
             kbc_ih();
             int i = retrieve_letter(data);
-            text.insert()
+            text[index] = i;
+            index++;
             update_buffer(text);
           }
           break;
@@ -94,7 +96,7 @@ extern uint8_t data;
 extern uint8_t packet[3];
 extern uint8_t size;
 extern uint32_t num_packet;
-uint32_t cnt  = 100;
+uint32_t cnt  = 1000;
 extern int current_index;
 extern struct packet pp;
 extern bool read_error;
@@ -105,10 +107,16 @@ int (test_mouse)() {
   mouse_subscribe_int(&mouse_irq_set);
   mouse_enable_data_reporting();
 
+
   int ipc_status,r;
   message msg;
+  int x;
+  int y;
 
-  while( num_packet < cnt )  {
+  if(initFrameBuffer(0x115) != 0) return 1;
+  if(startVideoMode(0x115) != 0) return 1;
+
+  while( num_packet < cnt && data != ESC_KEY)  {
     if((r=driver_receive(ANY,&msg,&ipc_status))) {
       printf("driver_receive failed with: %d",r);
       continue;
@@ -128,16 +136,29 @@ int (test_mouse)() {
               mouse_build_packet();
               mouse_print_packet(&pp);
               num_packet++;
+              if(num_packet == 1) {
+                x = pp.delta_x;
+                y = pp.delta_y;
+              } else {
+                x += pp.delta_x;
+                y -= pp.delta_y;
+              }
+              printf("pos: %d %d\n",x,y);
+              reset_screen();
+              draw_mouse(&x,&y);
               current_index = 0;
-            } 
+            }
           }
-
           break;
         default:
           break;
       }
     }
   }
+
+
+  if(exitVideoMode() != 0) return 1;
+
 
   mouse_write_register(MOUSE_DISABLE_DATA_REPORTING);
   if(restore_kbc()!= 0) return 1;

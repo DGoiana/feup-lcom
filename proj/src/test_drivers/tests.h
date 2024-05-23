@@ -15,5 +15,6 @@ int (test_timer)();
 int (test_mouse)();
 int (test_graphic)();
 int (wait_for_esc_key)();
+int (get_mouse_input)();
 
 #endif

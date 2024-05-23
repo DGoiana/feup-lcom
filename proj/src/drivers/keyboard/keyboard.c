@@ -30,7 +30,7 @@ void (kbc_ih)() {
 
 void (keyboard_subscribe_int)(uint8_t *bit_no) {
   *bit_no = kbc_hook_id;
-  sys_irqsetpolicy(KBC_IRQ,IRQ_REENABLE | IRQ_EXCLUSIVE,&kbc_hook_id);
+  sys_irqsetpolicy(KBC_IRQ,IRQ_REENABLE| IRQ_EXCLUSIVE,&kbc_hook_id);
 }
 
 

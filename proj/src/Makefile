@@ -17,6 +17,7 @@ PROG=proj
 SRCS =  main.c utils.c  keyboard.c mouse.c timer.c serial.c kbc_tests.c serial_tests.c queue.c graphic.c strings.c
 # additional compilation flags
 # "-Wall -Wextra -Werror -I . -std=c11 -Wno-unused-parameter" are already set
+# OPTIMIZATION (NO PRINTS) -D__LCOM_OPTIMIZED__
 CFLAGS += -pedantic
 
 # list of library dependencies (for Lab 2, only LCF library)
