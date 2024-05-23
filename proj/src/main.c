@@ -34,11 +34,11 @@ int main(int argc, char *argv[]) {
 }
 
 
-
 int(proj_main_loop)(int argc,char* argv[]) {
   int length = 1;
-  char *strings[] = {"Lorem Ipsum"};
-  ser_test_poll(COM1_BASE, atoi(argv[0]) ,WORD_LENGTH_8, NUM_STOP_2, PARITY_EVEN, BIT_RATE, length,strings);
+  char *strings[] = {"goiana cringe lmao\n"};
+  //ser_test_poll(COM1_BASE, atoi(argv[0]) ,WORD_LENGTH_8, NUM_STOP_2, PARITY_EVEN, BIT_RATE, length,strings);
+  ser_test_fifo(COM1_BASE, atoi(argv[0]) ,WORD_LENGTH_8, NUM_STOP_2, PARITY_EVEN, BIT_RATE, length,strings);
   return 0;
 }
 

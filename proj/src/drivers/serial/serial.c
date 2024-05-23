@@ -166,29 +166,19 @@ int (ser_receive_poll)(unsigned short base_addr,char *c) {
     return 0;
 }
 
-int (ser_subscribe_int)(uint8_t *bit_no) {
-    *bit_no = IRQ_COM1; // TODO
-    if(sys_irqsetpolicy(IRQ_COM1,IRQ_REENABLE, &serial_hook_id) != 0) return 1;
-    return 0;
+void (ser_subscribe_int)(uint8_t *bit_no) {
+    *bit_no = serial_hook_id; 
+    sys_irqsetpolicy(IRQ_COM1,IRQ_REENABLE | IRQ_EXCLUSIVE , &serial_hook_id);
 }
 
-int (ser_unsubscribe_int)() {
-    if(sys_irqrmpolicy(&serial_hook_id) != 0) return 1;
-    return 0;
+void (ser_unsubscribe_int)() {
+    sys_irqrmpolicy(&serial_hook_id);
 }
 
-/*
-    READ THE IER
-    UPDATE THE IER CONTENTS
-    SEND THE NEW IER
-*/
 int (ser_enable_rx_int)(unsigned short base_addr) {
     uint8_t ier;
-    if(util_sys_inb(base_addr + SER_ADDR_IER,&ier) != 0) {
-        printf("failed to read ier\n");
-        return 1;
-    }
-    ier |= (SER_IER_ENABLE_RX_INT | SER_IER_ENABLE_RX_LSR_INT);
+    if(util_sys_inb(base_addr + SER_ADDR_IER,&ier) != 0) return 1;
+    ier |= (SER_IER_ENABLE_RX_INT | SER_IER_ENABLE_RX_LSR_INT );
     if(sys_outb(base_addr + SER_ADDR_IER,ier) != 0) {
         printf("failed to update ier\n");
         return 1;
@@ -196,36 +186,80 @@ int (ser_enable_rx_int)(unsigned short base_addr) {
     return 0;
 }
 
+int (ser_enable_tx_int)(unsigned short base_addr) {
+    uint8_t ier;
+    if(util_sys_inb(base_addr + SER_ADDR_IER,&ier) != 0) return 1;
+    ier |= ( SER_IER_ENABLE_RX_INT );
+    if(sys_outb(base_addr + SER_ADDR_IER,ier) != 0) {
+        printf("failed to update ier\n");
+        return 1;
+    }
+    return 0;
+}
 
-/*
-    READ THE IIR
-    INTERPRET IT
-    ACCORDING TO THE TYPE OF INTERRUPT
-    FOR NOW, PRINT THE RECEIVE DATA ON INTERRUPT
-*/
-int (ser_ih)(unsigned short base_addr) {
-    uint8_t iir;
+int (ser_ih)(unsigned short base_addr,uint8_t iir1) {
     uint8_t data;
     uint8_t lsr;
 
-    if(util_sys_inb(base_addr + SER_ADDR_IIR,&iir) != 0) {
-        printf("failed to read irr\n");
+    if(util_sys_inb(base_addr + SER_ADDR_IIR,&iir1) != 0) {
+        printf("failed to read iir1\n");
         return 1;
     }
-    if((iir & SER_IIR_NOT_PENDING)) {
-        printf("iir not pending");
-        return 1;
-    }
-    if(iir & SER_IIR_CHAR_TIMEOUT) {
+    if(iir1 & SER_IIR_CHAR_TIMEOUT) {
         printf("failed to read char\n");
         return 0;
     }
-    if(iir & SER_IIR_RX_AVAILABLE) {
-        if(util_sys_inb(base_addr + SER_ADDR_LSR,&data) != 0) {
+    if(iir1 & SER_IIR_LSR) {
+        if(util_sys_inb(base_addr + SER_ADDR_LSR, &lsr) != 0) {
+            printf("failed to read lsr\n"); return 1;
+        }
+        if(lsr & (SER_LSR_OVERRUN_ERR | SER_LSR_PARITY_ERR | SER_LSR_FRAMING_ERR)) {
+            printf("LSR ERROR \n"); return 0;
+        }
+    }
+    if(iir1 & SER_IIR_RX_AVAILABLE) {
+        if(util_sys_inb(base_addr + SER_ADDR_RX_BUF,&data) != 0) {
             printf("failed to read data\n"); return 1;
         }
-        printf("%c\n",data);
+        printf("%c",data);
+    }
+    return 0;
+}
+
+int (ser_enable_fifo)(unsigned short base_addr,uint8_t *queue_size) {
+    uint8_t fcr = SER_FCR_ENABLE_FIFO | SER_FCR_CLEAR_RX_FIFO | SER_FCR_CREAR_TX_FIFO | SER_FCR_TR_LEVEL_8; 
+    *queue_size = QUEUE_SIZE;
+    if(sys_outb(base_addr + SER_ADDR_FCR,fcr) != 0){
+        printf("failed to enable FIFO\n");
+        return 1;
+    }
+    return 0;
+}
+
+int (ser_fifo_ih)(unsigned short base_addr,queue_t *q,uint8_t iir) {
+    uint8_t lsr;
+    uint8_t data;
+
+    if((iir & SER_IIR_NOT_PENDING)) {
+        //printf("iir not pending");
+        return 1;
+    }
+/*     if(iir & SER_IIR_CHAR_TIMEOUT) {
+        printf("failed to read char\n");
         return 0;
+    } */
+    if(iir & SER_IIR_RX_AVAILABLE) {
+        if(iir & SER_IIR_ENABLED_FIFO) {
+            for(int i = 0; i < QUEUE_SIZE; i++) {
+                if(util_sys_inb(base_addr + SER_ADDR_RX_BUF,&data) != 0) {
+                    printf("failed to read data\n"); return 1;
+                }
+                enqueue(q,data);
+            }
+            return 0;
+        } else {
+            printf("failed to get fifo data\n"); return 1;
+        }
     }
     if(iir & SER_IIR_LSR) {
         if(util_sys_inb(base_addr + SER_ADDR_LSR, &lsr) != 0) {

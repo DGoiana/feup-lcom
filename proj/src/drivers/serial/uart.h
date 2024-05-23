@@ -3,7 +3,7 @@
 #define SER_MAX_BIT_RATE 115200
 #define SER_MAX_TRIES 5
 #define DELAY_US 20000
-
+#define QUEUE_SIZE 8
 
 // Irq Lines
 #define IRQ_COM1 0x04
@@ -99,4 +99,4 @@
 #define PARITY_EVEN 0
 #define PARITY_ODD 1
 
-#define BIT_RATE 5
+#define BIT_RATE 100
