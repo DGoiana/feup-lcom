@@ -6,7 +6,7 @@
 
 #include "test_drivers/kbc/kbc_tests.h"
 #include "test_drivers/serial/serial_tests.h"
-
+#include "test_drivers/rtc/rtc_tests.h"
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 
 int(proj_main_loop)(int argc,char* argv[]) {
 
-  if(ser_test_set(COM1_BASE,5,1,1,10) != 0) return 1;
+  if(rtc_test_conf() != 0) return 1;
   return 0;
 }
 

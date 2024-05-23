@@ -1,5 +1,5 @@
 #ifndef _LCOM_I8254_H_
-#define _LCOM_I8254_H
+#define _LCOM_I8254_H_
 
 #define RTC_ADDR_REG 0x70
 #define RTC_WRITE_DATA_REG 0x71
