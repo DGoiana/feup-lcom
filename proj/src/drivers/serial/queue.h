@@ -13,5 +13,6 @@ int enqueue(queue_t *q,char c);
 int dequeue(queue_t *q,char *c);
 
 void print_queue(queue_t *q,int queue_size);
+int* queue_dequeue_array(queue_t *q, int queue_size, int *r);
 
 #endif

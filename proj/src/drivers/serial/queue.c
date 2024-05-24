@@ -83,3 +83,14 @@ void print_queue(queue_t *q,int queue_size) {
         }
     }
 }
+
+void queue_dequeue_array(queue_t *q, int queue_size, int *r,int *index){
+    char c;
+    for(int i = 0; i < queue_size; i++){
+        if(dequeue(q, &c) == 0 && c != 0) {
+            r[i + index] = c - 'A';
+        }
+    }
+    index += queue_size;
+    return;
+}

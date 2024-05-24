@@ -125,7 +125,7 @@ int ser_test_fifo(unsigned short base_addr, unsigned char tx, unsigned long bits
         ser_subscribe_int(&ser_irq_set);
         ser_enable_rx_int(base_addr);
 
-        while(tries) {
+        while(true) {
             if((r=driver_receive(ANY,&msg,&ipc_status))) {
                 printf("driver_receive failed with: %d\n",r);
                 continue;

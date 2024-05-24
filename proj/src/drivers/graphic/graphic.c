@@ -89,7 +89,6 @@ int update_buffer(int *text, uint index){
     formatBackground(frame_buffer);
     for(uint i = 0; i < index; i++){
         if(text[i] != -1) {
-            printf("%d\n", text[i]);
             draw_xpm((xpm_map_t) a_xpm[text[i]], x, y, frame_buffer);
             if(x + 12 > x_res * 0.7){
                 x = x_res * 0.3;
