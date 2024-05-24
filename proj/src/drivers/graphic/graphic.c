@@ -83,30 +83,32 @@ int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer) {
     return 0;
 }
 
-int update_buffer(int *text){
-    u16_t x = 0;
-    u16_t y = 0;
-    void* buffer = malloc(x_res * 0.4 + y_res * 0.05 + bytesPerPixel);
-    for(uint i = 0; i < sizeof(text) / sizeof(text[0]); i++){
-        draw_xpm((xpm_map_t) a_xpm[text[i]], x, y,video_mem);
-        if(x + 12 > x_res * 0.7){
-            x = x_res * 0.3;
-            y += 10;
+int update_buffer(int *text, uint index){
+    u16_t x = x_res * 0.3;
+    u16_t y = y_res * 0.9;
+    formatBackground(frame_buffer);
+    for(uint i = 0; i < index; i++){
+        if(text[i] != -1) {
+            printf("%d\n", text[i]);
+            draw_xpm((xpm_map_t) a_xpm[text[i]], x, y, frame_buffer);
+            if(x + 12 > x_res * 0.7){
+                x = x_res * 0.3;
+                y += 10;
+            }
+            else x += 12;
         }
-        else x += 12;
     }
-    u8_t* pos = (u8_t *)video_mem + (int)((x_res * y_res * 0.9 + (x_res * 0.3)) * bytesPerPixel);
-    memcpy(pos, buffer, x_res * 0.4 + y_res * 0.05 + bytesPerPixel);
+    memcpy(video_mem, frame_buffer, vram_size);
     return 0;
 }
 
-int formatBackground(){
-    drawRectangle(0, 0, x_res, y_res, 0xFFFFFF, video_mem);
-    drawRectangle(0, 0, x_res, y_res * 0.075, 0x57ACEA, video_mem);
-    drawRectangle(0, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, video_mem);
-    drawRectangle(x_res * 0.75, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, video_mem);
-    drawRectangle(x_res * 0.95, y_res * 0.0175, y_res * 0.04, y_res * 0.04, 0xf53400, video_mem);
-    drawRectangle(x_res * 0.3, y_res * 0.9, x_res* 0.4, y_res * 0.05, 0xd8e0e5, video_mem);
+int formatBackground(void* buffer){
+    drawRectangle(0, 0, x_res, y_res, 0xFFFFFF, buffer);
+    drawRectangle(0, 0, x_res, y_res * 0.075, 0x57ACEA, buffer);
+    drawRectangle(0, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, buffer);
+    drawRectangle(x_res * 0.75, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, buffer);
+    drawRectangle(x_res * 0.95, y_res * 0.0175, y_res * 0.04, y_res * 0.04, 0xf53400, buffer);       
+    drawRectangle(x_res * 0.3, y_res * 0.9, x_res* 0.4, y_res * 0.05, 0xd8e0e5, buffer);
     return 0;
 }
 

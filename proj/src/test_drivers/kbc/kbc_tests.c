@@ -19,7 +19,7 @@ int (wait_for_esc_key)() {
 
   int ipc_status,r;
   message msg;
-  int index = 0;
+  uint index = 0;
 
   int text[100] = {-1};
 
@@ -34,9 +34,15 @@ int (wait_for_esc_key)() {
           if(msg.m_notify.interrupts & BIT(irq_set)) {
             kbc_ih();
             int i = retrieve_letter(data);
-            text[index] = i;
-            index++;
-            update_buffer(text);
+            if(i != -1 || data == 0xe){
+              if(data == 0xe) {
+                index--;
+              } else {
+                text[index] = i;
+                index++;
+              }
+              update_buffer(text, index);
+            }
           }
           break;
         default:
@@ -166,7 +172,7 @@ int (test_graphic)(){
   if(startVideoMode(0x115) != 0) return 1;
 
   //paint backroung to white and draw rectangles
-  if(formatBackground() != 0) return 1;
+  if(formatBackground(video_mem) != 0) return 1;
 
   wait_for_esc_key();
 

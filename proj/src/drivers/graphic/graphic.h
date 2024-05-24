@@ -19,9 +19,9 @@ int drawRectangle(u16_t x, u16_t y, u16_t width, u16_t height, u32_t color, void
 int drawLine(u16_t x, u16_t y, u16_t width, u32_t color, void* buffer);
 int drawPixel(u16_t x, u16_t y, u32_t color, void* buffer);
 int exitVideoMode();
-int formatBackground();
+int formatBackground(void* buffer);
 int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer);
-int update_buffer(int text[]);
+int update_buffer(int *text, uint index);
 int draw_mouse(int x,int y);
 int reset_screen();
 
