@@ -12,5 +12,6 @@
 int (test_keyboard)();
 int (test_timer)();
 int (test_mouse)();
+int (wait_for_esc_key)();
 
 #endif

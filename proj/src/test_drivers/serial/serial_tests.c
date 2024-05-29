@@ -141,7 +141,7 @@ int ser_test_fifo(unsigned short base_addr, unsigned char tx, unsigned long bits
                                 return 1;
                             }
                             ser_fifo_ih(base_addr,q,iir1);
-                            print_queue(q,queue_size);
+                            //print_queue(q,queue_size);
                         } while(iir1 & SER_IIR_RX_AVAILABLE);
                         
                     }

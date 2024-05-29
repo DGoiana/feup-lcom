@@ -1,10 +1,62 @@
+sent message
+received message
+A S D H A S 
+received message
 
-WHOLE LCR STAT: 8
-WHOLE IER STAT: 0
-WORD SIZE: 5
-NUMBER OF STOP BITS: 1
-DLAB: 0
-PARITY:ODD
-RX_RECEIVE: 0
-TX_EMPTY: 0
-LSR_INT: 0
+received message
+J D 
+received message
+
+received message
+
+sent message
+received message
+A S D H A S J D 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+
+sent message
+received message
+A S D H A S J D 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+
+sent message
+received message
+A S D H A S J D 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+A A A A A A A A 
+received message
+

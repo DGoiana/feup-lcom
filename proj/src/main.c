@@ -7,6 +7,7 @@
 #include "test_drivers/kbc/kbc_tests.h"
 #include "test_drivers/serial/serial_tests.h"
 #include "drivers/serial/uart.h"
+#include "test_drivers/graphics/graphics_test.h"
 
 
 int main(int argc, char *argv[]) {
@@ -35,12 +36,12 @@ int main(int argc, char *argv[]) {
 
 
 int(proj_main_loop)(int argc,char* argv[]) {
-  int length = 1;
-  char *strings[] = {"goiana cringe lmao\n"};
+  //int length = 1;
+  //char *strings[] = {"goiana cringe lmao\n"};
   //ser_test_poll(COM1_BASE, atoi(argv[0]) ,WORD_LENGTH_8, NUM_STOP_2, PARITY_EVEN, BIT_RATE, length,strings);
-  ser_test_fifo(COM1_BASE, atoi(argv[0]) ,WORD_LENGTH_8, NUM_STOP_2, PARITY_EVEN, BIT_RATE, length,strings);
+  //ser_test_fifo(COM1_BASE, atoi(argv[0]) ,WORD_LENGTH_8, NUM_STOP_2, PARITY_EVEN, BIT_RATE, length,strings);
   test_graphic();
-  test_mouse();
+  //test_mouse();
   return 0;
 }
 

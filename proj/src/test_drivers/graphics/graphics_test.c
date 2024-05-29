@@ -2,6 +2,7 @@
 #include "../../drivers/graphic/graphic.h"
 #include "../../drivers/keyboard/keyboard.h"
 #include "../../strings/strings.h"
+#include "../kbc/kbc_tests.h"
 
 int (test_graphic)(){
   if(initFrameBuffer(0x115) != 0) return 1;
