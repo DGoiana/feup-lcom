@@ -1,6 +1,7 @@
 #ifndef _LCOM_GRAPHIC_H
 #define _LCOM_GRAPHIC_H
 
+#define LINES_PER_MESSAGE(i) (strlen(messages[i]) / (x_res * 0.425 / 12) + 1)
 
 #include <lcom/lcf.h>
 #include "math.h"
@@ -23,6 +24,10 @@ int formatBackground(void* buffer);
 int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer);
 int update_buffer(int *text, uint index);
 int draw_mouse(int x,int y);
+int drawMessages(void* buffer);
 int reset_screen();
+void update_message_buffer(char *message) ;
+void free_message_buffer();
+void alloc_mem_messages_buffer();
 
 #endif

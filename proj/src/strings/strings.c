@@ -2,10 +2,10 @@
 #include <string.h>
 
 u8_t scan_codes[] = { 0x1E , 0x30 , 0x2E ,  0x20 ,  0x12 ,  0x21 ,  0x22 ,  0x23 ,  0x17 ,  0x24 ,  0x25 ,  0x26 ,  0x32 ,  0x31 ,  0x18 ,  0x19 ,  0x10 ,  0x13 ,  0x1F ,  0x14 ,  0x16 ,  0x2F ,  0x11 ,  0x2D ,  0x15 ,  0x2C, 0x39};
-char *alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+char *alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .";
 
 int retrieve_letter(u8_t scan_code){
-    for(int i = 0; i < 27; i++){
+    for(int i = 0; i < 28; i++){
         if(scan_code == scan_codes[i]) return i;
     }
     return -1;    
