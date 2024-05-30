@@ -21,6 +21,8 @@ int (test_timer)() {
 
 int (wait_for_esc_key)() {
 
+  alloc_mem_messages_buffer();
+
   uint8_t queue_size = 1;
   queue_t *q;
 
@@ -96,12 +98,14 @@ int (wait_for_esc_key)() {
               for(int i = 0; i < index; i++){
                 message[i] = (char) alphabet[text[i]];
               }
-              printf("\n");
-              message[index] = '\0';
+              message[index] = '.';
+              message[index + 1] = '\0';
+              index++;
               for(int j = 0; j < index; j++) {
                   if(ser_send_poll(COM1_BASE, (char) message[j]) != 0) return 1;
               }
               index = 0;
+              update_message_buffer(message);
               update_buffer(text, index);
               draw_mouse(x,y);
             }
@@ -115,7 +119,15 @@ int (wait_for_esc_key)() {
                   }
                   ser_fifo_ih(base_addr,q,iir1);
                   queue_dequeue_array(q, queue_size, response,&index);
+                  char message[100] = {'\0'};
+                  for(int i =0; i < index; i++) {
+                    message[i] = (char) alphabet[response[i]];
+                  }
+                  message[index] = '\0';
+                  index = 0;
+                  update_message_buffer(message);
                   update_buffer(response, index);
+                  draw_mouse(x,y);
                } while(iir1 & SER_IIR_RX_AVAILABLE);
           }
           if(msg.m_notify.interrupts & BIT(mouse_irq_set)) {
@@ -150,5 +162,6 @@ int (wait_for_esc_key)() {
   mouse_write_register(MOUSE_DISABLE_DATA_REPORTING);
   ser_unsubscribe_int();
   keyboard_unsubscribe_int();
+  free_message_buffer();
   return 0;
 }

@@ -2,13 +2,23 @@
 #include "../../assets/letters.xpm"
 #include "../../assets/mouse.xpm"
 
-char* messages[] = {"PRETOS NA CAPITAL FRANCESA", "MENSAGEM DE TESTE DOIS UM BOCADO MAIOR", "MENSAGEM DE TESTE TRES ABSURDAMENTE MAIOR SO PARA TESTAR A POSICAO EM QUE COMECA A ULTIMA MENSAGEM A SER ESCRITA COM MAIS LETRAS SO PARA MESMO EFETIVAMENTE VERIFICAR SE ESTE TIPO DE MECANISMO DE CALCULO DE AREA DE MENSAGEM A OCUPAR FUNCIONARIA REALMENTE NUM PARADIGMA REAL E DE APRESENTACAO AO QUAL NOS VAMOS SUJEITAR NO DIA DOIS DE JUNHO"};
+#define MAX_MESSAGE_NUM 10000
+
+char **messages = NULL;
+int num_messages = 0;
+char *joined_messages = NULL;
 
 void alloc_mem_frame_buffer() {
     frame_buffer = malloc(vram_size);
     memset(frame_buffer,0,vram_size);
     return;
 }
+
+void alloc_mem_messages_buffer() {
+    messages = malloc(MAX_MESSAGE_NUM * sizeof(char *));
+    joined_messages = malloc(MAX_MESSAGE_NUM * sizeof(char));
+}
+
 
 int startVideoMode(u16_t mode){
     reg86_t reg;
@@ -89,7 +99,9 @@ int update_buffer(int *text, uint index){
     u16_t x = x_res * 0.3;
     u16_t y = y_res * 0.9;
     formatBackground(frame_buffer);
-    drawMessages(frame_buffer);
+    if(num_messages > 0) {
+        drawMessages(frame_buffer);
+    }
     for(uint i = 0; i < index; i++){
         if(text[i] != -1) {
             draw_xpm((xpm_map_t) a_xpm[text[i]], x, y, frame_buffer);
@@ -104,14 +116,38 @@ int update_buffer(int *text, uint index){
     return 0;
 }
 
-int drawMessages(void* buffer){
-    u16_t x = x_res * 0.275;
-    u16_t y = y_res * 0.83 - (10 * LINES_PER_MESSAGE(2));
+void update_message_buffer(char *message) {
+    if(message[0] >= 'a') {
+        return;
+    }
+    printf("%d\n",message[strlen(message) - 1]);
+    strcat(joined_messages,message);
+    if(message[strlen(message) - 1] == '.') {
+        strcat(joined_messages,"\0"); 
+        printf("%s\n",joined_messages);
+        char *r = malloc(sizeof(char) * strlen(joined_messages));
+        strcpy(r,joined_messages);
+        joined_messages[0] = '\0';
+        messages[num_messages] = r;
+        num_messages++;
+    } 
+ }
 
-    for(int i = 2; i >= 0; i--){
+void free_message_buffer() {
+    for(int i = 0; i < num_messages; i++) {
+        free(messages[i]);
+    }
+    free(messages);
+    free(joined_messages);
+}
+
+ int drawMessages(void* buffer){
+    u16_t x = x_res * 0.275;
+    u16_t y = y_res * 0.83 - (10 * LINES_PER_MESSAGE(num_messages - 1  < 0 ? 0 : num_messages - 1));
+    for(int i = num_messages- 1; i >= 0; i--){
         u16_t initialY = y;
         for(uint j = 0; j < strlen(messages[i]); j++){
-            int index = messages[i][j] - 'A' == -33 ? 26 : messages[i][j] - 'A';
+            int index = messages[i][j] - 'A' < 0 ? 26 : messages[i][j] - 'A';
             draw_xpm((xpm_map_t) a_xpm[index], x, y, frame_buffer);
             
             if(x + 12 > x_res * 0.725) {
@@ -126,7 +162,7 @@ int drawMessages(void* buffer){
     }
     return 0;
  }
-
+ 
 // int drawMessage(void* buffer, char* message){
 //     drawRectangle(x_res * 0.275, y_res * 0.85, x_res * 0.45, y_res * 0.05, 0xd8e0e5, buffer);
 // }
