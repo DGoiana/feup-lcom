@@ -6,6 +6,9 @@
 
 #include "test_drivers/kbc/kbc_tests.h"
 #include "test_drivers/serial/serial_tests.h"
+#include "drivers/serial/uart.h"
+#include "test_drivers/graphics/graphics_test.h"
+
 #include "test_drivers/rtc/rtc_tests.h"
 
 int main(int argc, char *argv[]) {
@@ -33,9 +36,8 @@ int main(int argc, char *argv[]) {
 }
 
 
-
 int(proj_main_loop)(int argc,char* argv[]) {
-  if(rtc_test_date() != 0) return 1;
+  test_graphic();
   return 0;
 }
 

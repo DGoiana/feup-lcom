@@ -1,0 +1,6 @@
+# Ignore all
+*
+../*
+# Unignore directories
+!*.c
+!*.h

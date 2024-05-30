@@ -3,6 +3,7 @@
 
 #include "../../drivers/serial/serial.h"
 #include "../../drivers/utils/utils.h"
+#include "../../drivers/serial/queue.h"
 #include <lcom/lcf.h>
 
 int ser_test_conf(unsigned short base_addr);
@@ -13,9 +14,10 @@ int ser_test_set(unsigned short base_addr, unsigned long bits, unsigned long sto
 
 int ser_test_poll(unsigned short base_addr, unsigned char tx, unsigned long bits, 	unsigned long stop, long parity, unsigned long rate, int stringc, char *strings[]);
 
-int ser_test_int(/* details to be provided */) ;
+int ser_test_int(unsigned short base_addr, unsigned char tx, unsigned long bits, 	unsigned long stop, long parity, unsigned long rate, int stringc, char *strings[]);
 
-int ser_test_fifo(/* details to be provided */);
+int ser_test_fifo(unsigned short base_addr, unsigned char tx, unsigned long bits, 	unsigned long stop, long parity, unsigned long rate, int stringc, char *strings[]);
 
+int ser_test_queue();
 
 #endif
