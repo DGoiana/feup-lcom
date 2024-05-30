@@ -100,3 +100,4 @@
 #define PARITY_ODD 1
 
 #define BIT_RATE 100
+#define VALID_RATE(rate) ((rate)%SER_MAX_BIT_RATE == 0)
