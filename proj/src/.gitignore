@@ -1,8 +1,6 @@
 # Ignore all
 *
-
+../*
 # Unignore directories
-!*/
-!*.*
-
-*.o
+!*.c
+!*.h
