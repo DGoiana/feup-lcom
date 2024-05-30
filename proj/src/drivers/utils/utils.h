@@ -5,6 +5,13 @@
 #include <lcom/lcf.h>
 #include <stdint.h>
 
+struct collision_box {
+  u16_t x;
+  u16_t y;
+  u16_t width;
+  u16_t height;
+};
+
 int(util_get_LSB)(uint16_t val, uint8_t *lsb);
 int(util_get_MSB)(uint16_t val, uint8_t *msb);
 int (util_sys_inb)(int port, uint8_t *value);

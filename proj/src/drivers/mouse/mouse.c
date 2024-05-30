@@ -1,7 +1,7 @@
 #include "mouse.h"
 
 uint8_t stat;
-uint8_t data;
+uint8_t data_mouse;
 uint8_t packet[3];
 uint8_t size;
 uint32_t num_packet;
@@ -10,101 +10,6 @@ int current_index = 0;
 struct packet pp;
 bool read_error;
 
-
-
-enum STATE current_state = INITIAL;
-int slope = 2;
-int current_x = 0;
-int current_y = 0;
-
-/**
- * State Machine:
- * 1. Initial State
- * 1-> 2 via click left
- * 2 -> 2 while abs(expected - current) <= tolerance & left is pressed
- * 2 -> 1 if abs(expected - current) > tolerance
- * 2 -> 3 if left releasedd
- * 3 -> 3 while right is not clicked
- * 3 -> 1 if button other than right is clicked or abs(expected - current) > tolerance
- * 3 -> 4 if right is clicked and only right
- * 4 -> 4 while abs(expected - current) <= tolerance & right is pressed
- * 4 -> 1 if right release, if abs(expected - current) <= tolerance or another button is clicked
-*/
-
-
-bool (check_inbound)(int *x,int *y, int x_offset, int y_offset, int tolerance) {
-  int new_x; int new_y;
-
-  if(x_offset == 0 || y_offset == 0) return true;
-
-  new_x = *x + x_offset;
-  new_y = *y + y_offset;
-
-  int lower_bound = abs(slope*(new_x)) - tolerance;
-  int upper_bound = abs(slope*(new_x)) + tolerance;
-
-  if((new_y >= lower_bound) && (new_y <= upper_bound) ) {
-    *x += new_x;
-    *y += new_y;
-    return true;
-  } else {
-    *x = 0;
-    *y = 0;
-    return false;
-  }
-}
-
-int (next_state)(struct packet pp, int tolerance){
-  switch (current_state)
-  {
-  case INITIAL:
-    if(pp.lb && !pp.mb && !pp.rb) {
-      current_x += pp.delta_x;
-      current_y += pp.delta_y;
-
-      current_state = FIRST;
-    }
-    break;
-  case FIRST: // release left button
-    if(check_inbound(&current_x,&current_y,pp.delta_x,pp.delta_y,tolerance)) {
-      if(pp.mb) {
-        current_state = INITIAL;
-      } else if(!pp.lb) {
-        current_state = SECOND;
-      } else {
-        current_state = FIRST;  // just for clarity
-      }
-    } else {
-      current_state = INITIAL;
-    }
-    break;
-  case SECOND:
-    if(check_inbound(&current_x,&current_y,pp.delta_x,pp.delta_y,tolerance)) {
-      if(!pp.rb && !pp.mb && !pp.lb) current_state = SECOND;    // just for clarity
-      if(pp.mb || pp.lb) current_state = INITIAL;
-      if(pp.rb) current_state = THIRD;
-    } else {
-      current_state = INITIAL;
-    }
-    break;
-  case THIRD:
-    if(check_inbound(&current_x,&current_y,pp.delta_x,pp.delta_y,tolerance)) {
-      if(pp.mb || pp.lb) {
-        current_state = INITIAL;
-      } else if (!pp.rb) {
-        current_state = INITIAL;
-      }
-      break;
-    } else {
-      current_state = INITIAL;
-      break;
-    }
-    current_state = THIRD;  // just for clarity
-  default:
-    break;
-  }
-  return 0;
-}
 
 int (kbc_write_register)(uint8_t port,uint8_t message) {
   int num_tries = MAX_NUM_TRIES;
@@ -193,16 +98,23 @@ int (mouse_unsubscribe_int)() {
 }
 
 void (mouse_ih)() {
-  if(kbc_read_register(KBC_OUT_BUF,&data) != 0) read_error = 1;
+  if(kbc_read_register(KBC_OUT_BUF,&data_mouse) != 0) read_error = 1;
 }
 
 
 void mouse_synch_packet() {
-  if(current_index == 0 && (data & BIT(3))) {
-    packet[current_index] = data;
+  if(current_index == 0 && (data_mouse & BIT(3))) {
+    packet[current_index] = data_mouse;
     current_index++;
   } else if (current_index > 0) {
-    packet[current_index] = data;
+    packet[current_index] = data_mouse;
     current_index++;
   }
+}
+
+bool (mouse_collision)(u16_t x,u16_t y,struct collision_box collision_box) {
+  u16_t x_diff = x - collision_box.x;
+  u16_t y_diff = y - collision_box.y;
+
+  return x_diff < collision_box.width && y_diff - collision_box.height;
 }

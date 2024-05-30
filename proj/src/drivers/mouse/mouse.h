@@ -3,20 +3,8 @@
 
 #include <lcom/lcf.h>
 #include "i8042.h"
+#include "../../drivers/utils/utils.h"
 
-enum STATE {
-  INITIAL,
-  FIRST,
-  SECOND,
-  THIRD,
-  FOURTH
-};
-
-enum DIRECTION {
-  UP,
-  DOWN,
-  VERTEX
-};
 
 int (kbc_write_register)(uint8_t port,uint8_t message);
 int (kbc_read_register)(uint8_t port, uint8_t *message);
@@ -27,8 +15,6 @@ int (mouse_subscribe_int)(uint8_t *bit_no);
 int (mouse_unsubscribe_int)();
 void (mouse_ih)();
 void (mouse_synch_packet)();
-
-int (next_state)(struct packet pp, int tolerance);
-bool (check_inbound)(int *x,int *y, int x_offset, int y_offset, int tolerance);
+bool (mouse_collision)(u16_t x,u16_t y,struct collision_box collision_box);
 
 #endif

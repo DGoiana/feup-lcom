@@ -2,7 +2,7 @@
 #define _LCOM_KEYBOARD_H_
 
 #include <lcom/lcf.h>
-#include "i8042.h"
+#include "../mouse/i8042.h"
 
 void (kbc_ih)();
 void (keyboard_subscribe_int)(uint8_t *bit_no);
