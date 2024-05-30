@@ -75,25 +75,27 @@ int (wait_for_esc_key)() {
             } else if (data == 0x1c) {
               char message[100] = {'\0'};
               for(int i = 0; i < index; i++){
-                message[i] = (char) alphabet[text[i]]; 
+                message[i] = (char) alphabet[text[i]];
               }
+              printf("\n");
               message[index] = '\0';
               for(int j = 0; j < index; j++) {
                   if(ser_send_poll(COM1_BASE, (char) message[j]) != 0) return 1;
               }
-              printf("sent message\n");
+              index = 0;
+              update_buffer(text, index);
             }
           }
 
           if(msg.m_notify.interrupts & BIT(ser_irq_set)) {
               do {
-                printf("received message\n");
                   if(util_sys_inb(base_addr + SER_ADDR_IIR,&iir1) != 0) {
                       printf("failed to read iir1\n");
                       return 1;
                   }
                   ser_fifo_ih(base_addr,q,iir1);
                   queue_dequeue_array(q, queue_size, response,&index);
+                  printf("\n");
                   update_buffer(response, index);
                } while(iir1 & SER_IIR_RX_AVAILABLE);
               

@@ -89,14 +89,15 @@ void queue_dequeue_array(queue_t *q, int queue_size, int *r,int *index){
     int buffer_size = 0;
     for(int i = 0; i < 8; i++){
         if(dequeue(q, &c) == 0 && c != 0) {
-            r[i + *index] = c - 'A';
-            printf("%c ",c);
+            printf("%c",c);
+            r[i + *index] = c - 'A' == -33 ? 26 : c - 'A';
             buffer_size++;
         }
     }
+    printf("\n");
     *index += buffer_size;
-/*     for(int i = 0; i < *index; i++) {
+    for(int i = 0; i < *index; i++) {
         printf("%d\n",r[i]);
-    } */
+    } 
     return;
 }
