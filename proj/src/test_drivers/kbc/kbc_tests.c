@@ -97,7 +97,6 @@ int (wait_for_esc_key)() {
                   queue_dequeue_array(q, queue_size, response,&index);
                   update_buffer(response, index);
                } while(iir1 & SER_IIR_RX_AVAILABLE);
-              
           }
 
 

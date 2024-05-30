@@ -2,6 +2,8 @@
 #include "../../assets/letters.xpm"
 #include "../../assets/mouse.xpm"
 
+char* messages[] = {"PRETOS NA CAPITAL FRANCESA", "MENSAGEM DE TESTE DOIS UM BOCADO MAIOR", "MENSAGEM DE TESTE TRES ABSURDAMENTE MAIOR SO PARA TESTAR A POSICAO EM QUE COMECA A ULTIMA MENSAGEM A SER ESCRITA COM MAIS LETRAS SO PARA MESMO EFETIVAMENTE VERIFICAR SE ESTE TIPO DE MECANISMO DE CALCULO DE AREA DE MENSAGEM A OCUPAR FUNCIONARIA REALMENTE NUM PARADIGMA REAL E DE APRESENTACAO AO QUAL NOS VAMOS SUJEITAR NO DIA DOIS DE JUNHO"};
+
 void alloc_mem_frame_buffer() {
     frame_buffer = malloc(vram_size);
     memset(frame_buffer,0,vram_size);
@@ -87,6 +89,7 @@ int update_buffer(int *text, uint index){
     u16_t x = x_res * 0.3;
     u16_t y = y_res * 0.9;
     formatBackground(frame_buffer);
+    drawMessages(frame_buffer);
     for(uint i = 0; i < index; i++){
         if(text[i] != -1) {
             draw_xpm((xpm_map_t) a_xpm[text[i]], x, y, frame_buffer);
@@ -101,13 +104,40 @@ int update_buffer(int *text, uint index){
     return 0;
 }
 
+int drawMessages(void* buffer){
+    u16_t x = x_res * 0.275;
+    u16_t y = y_res * 0.83 - (10 * LINES_PER_MESSAGE(2));
+
+    for(int i = 2; i >= 0; i--){
+        u16_t initialY = y;
+        for(uint j = 0; j < strlen(messages[i]); j++){
+            int index = messages[i][j] - 'A' == -33 ? 26 : messages[i][j] - 'A';
+            draw_xpm((xpm_map_t) a_xpm[index], x, y, frame_buffer);
+            
+            if(x + 12 > x_res * 0.725) {
+                x = x_res * 0.275;
+                y += 10;
+            } else {
+                x += 12;
+            }
+        }
+        x = x_res * 0.275;
+        if(i - 1 >= 0) y = initialY - (LINES_PER_MESSAGE(i-1)) * 20;
+    }
+    return 0;
+ }
+
+// int drawMessage(void* buffer, char* message){
+//     drawRectangle(x_res * 0.275, y_res * 0.85, x_res * 0.45, y_res * 0.05, 0xd8e0e5, buffer);
+// }
+
 int formatBackground(void* buffer){
     drawRectangle(0, 0, x_res, y_res, 0xFFFFFF, buffer);
     drawRectangle(0, 0, x_res, y_res * 0.075, 0x57ACEA, buffer);
     drawRectangle(0, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, buffer);
     drawRectangle(x_res * 0.75, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, buffer);
     drawRectangle(x_res * 0.95, y_res * 0.0175, y_res * 0.04, y_res * 0.04, 0xf53400, buffer);       
-    drawRectangle(x_res * 0.3, y_res * 0.9, x_res* 0.4, y_res * 0.05, 0xd8e0e5, buffer);
+    drawRectangle(x_res * 0.3, y_res * 0.9, x_res * 0.4, y_res * 0.05, 0xd8e0e5, buffer);   
     return 0;
 }
 
