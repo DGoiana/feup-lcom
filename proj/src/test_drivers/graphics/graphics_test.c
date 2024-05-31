@@ -9,7 +9,7 @@ int (test_graphic)(){
   if(startVideoMode(0x115) != 0) return 1;
 
   //paint backroung to white and draw rectangles
-  if(formatBackground(video_mem) != 0) return 1;
+  if(formatBackground(buffers[current_buffer]) != 0) return 1;
 
   wait_for_esc_key();
 

@@ -16,11 +16,13 @@ vbe_mode_info_t mode_info;
 u32_t bytesPerPixel;
 u16_t y_res;
 u16_t x_res;
-void *frame_buffer;
-void* video_mem;
+void* buffers[2] = {NULL, NULL};
+u8_t current_buffer = 0;
 uint32_t vram_size;
 
 int startVideoMode(u16_t mode);
+int flip_buffer();
+void clear_buffer(void* buffer);
 int initFrameBuffer(u16_t mode);
 int drawRectangle(u16_t x, u16_t y, u16_t width, u16_t height, u32_t color, void* buffer);
 int drawLine(u16_t x, u16_t y, u16_t width, u32_t color, void* buffer);

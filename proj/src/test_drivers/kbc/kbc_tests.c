@@ -154,7 +154,7 @@ int (wait_for_esc_key)() {
 
           if(msg.m_notify.interrupts & BIT(timer_irq_set)){
             timer_int_handler();
-            update_buffer(text, index, true);
+            update_buffer(text, index, false);
             draw_mouse(x,y);
           }
 
