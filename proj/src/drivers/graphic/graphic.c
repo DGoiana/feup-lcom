@@ -95,23 +95,28 @@ int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer) {
     return 0;
 }
 
-int update_buffer(int *text, uint index){
-    u16_t x = x_res * 0.3;
-    u16_t y = y_res * 0.9;
+int update_buffer(int *text, uint index, bool blink){
+    u16_t x = X_AXIS(0.05);
+    u16_t y = Y_AXIS(0.9);
     formatBackground(frame_buffer);
     if(num_messages > 0) {
         drawMessages(frame_buffer);
     }
     for(uint i = 0; i < index; i++){
         if(text[i] != -1) {
-            draw_xpm((xpm_map_t) a_xpm[text[i]], x, y, frame_buffer);
-            if(x + 12 > x_res * 0.7){
-                x = x_res * 0.3;
+            if(x + 12 > X_AXIS(0.7)){
+                x = X_AXIS(0.05);
                 y += 10;
+                draw_xpm((xpm_map_t) a_xpm[text[i]], x, y, frame_buffer);
+                x += 12;
             }
-            else x += 12;
+            else{
+                draw_xpm((xpm_map_t) a_xpm[text[i]], x, y, frame_buffer);
+                x += 12;
+            }
         }
     }
+    if(blink) draw_xpm((xpm_map_t) mouse_xpm[1], x, y, frame_buffer);
     memcpy(video_mem, frame_buffer, vram_size);
     return 0;
 }
@@ -120,11 +125,9 @@ void update_message_buffer(char *message) {
     if(message[0] >= 'a') {
         return;
     }
-    printf("%d\n",message[strlen(message) - 1]);
     strcat(joined_messages,message);
     if(message[strlen(message) - 1] == '.') {
         strcat(joined_messages,"\0"); 
-        printf("%s\n",joined_messages);
         char *r = malloc(sizeof(char) * strlen(joined_messages));
         strcpy(r,joined_messages);
         joined_messages[0] = '\0';
@@ -142,43 +145,51 @@ void free_message_buffer() {
 }
 
  int drawMessages(void* buffer){
-    u16_t x = x_res * 0.275;
-    u16_t y = y_res * 0.83 - (10 * LINES_PER_MESSAGE(num_messages - 1  < 0 ? 0 : num_messages - 1));
-    for(int i = num_messages- 1; i >= 0; i--){
+    u16_t x = X_AXIS(0.275);
+    u16_t y = Y_AXIS(0.83) - (10 * LINES_PER_MESSAGE(num_messages - 1  < 0 ? 0 : num_messages - 1));
+    for(int i = num_messages - 1; i >= 0; i--){
         u16_t initialY = y;
         for(uint j = 0; j < strlen(messages[i]); j++){
             int index = messages[i][j] - 'A' < 0 ? 26 : messages[i][j] - 'A';
             draw_xpm((xpm_map_t) a_xpm[index], x, y, frame_buffer);
             
-            if(x + 12 > x_res * 0.725) {
-                x = x_res * 0.275;
+            if(x + 12 > X_AXIS(0.725)) {
+                x = X_AXIS(0.275);
                 y += 10;
             } else {
                 x += 12;
             }
         }
-        x = x_res * 0.275;
+        x = X_AXIS(0.275);
         if(i - 1 >= 0) y = initialY - (LINES_PER_MESSAGE(i-1)) * 20;
+
+        if(y < Y_AXIS(0.075)) return 0;
     }
     return 0;
  }
- 
-// int drawMessage(void* buffer, char* message){
-//     drawRectangle(x_res * 0.275, y_res * 0.85, x_res * 0.45, y_res * 0.05, 0xd8e0e5, buffer);
-// }
 
 int formatBackground(void* buffer){
-    drawRectangle(0, 0, x_res, y_res, 0xFFFFFF, buffer);
-    drawRectangle(0, 0, x_res, y_res * 0.075, 0x57ACEA, buffer);
-    drawRectangle(0, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, buffer);
-    drawRectangle(x_res * 0.75, y_res * 0.075, x_res * 0.25, y_res * 0.925, 0xd8e0e5, buffer);
-    drawRectangle(x_res * 0.95, y_res * 0.0175, y_res * 0.04, y_res * 0.04, 0xf53400, buffer);       
-    drawRectangle(x_res * 0.3, y_res * 0.9, x_res * 0.4, y_res * 0.05, 0xd8e0e5, buffer);   
+    drawRectangle(0, 0, x_res, y_res, VG_COLOR_WHITE, buffer);
+    drawRectangle(0, 0, x_res, Y_AXIS(0.075), VG_COLOR_BLUE, buffer);
+
+    drawRectangle(X_AXIS(0.75), Y_AXIS(0.075), X_AXIS(0.25), Y_AXIS(0.925), VG_COLOR_GRAY, buffer);
+    drawRectangle(X_AXIS(0.95), Y_AXIS(0.0175), Y_AXIS(0.04), Y_AXIS(0.04), VG_COLOR_RED, buffer);       
+    drawRectangle(X_AXIS(0.05), Y_AXIS(0.9), X_AXIS(0.65), Y_AXIS(0.05), VG_COLOR_GRAY, buffer);  
+
+    int j = 0;
+    for(int i = 0; i < Y_AXIS(0.02); i++){
+        int x_1 = X_AXIS(0.956) + i;
+        int y = Y_AXIS(0.025) + j;
+        int x_2 = (X_AXIS(0.956) + Y_AXIS(0.02)) - i;
+        drawPixel(x_1, y, VG_COLOR_WHITE, buffer);
+        drawPixel(x_2, y, VG_COLOR_WHITE, buffer);
+        j++;
+    } 
     return 0;
 }
 
 int draw_mouse(int x,int y){
-    draw_xpm((xpm_map_t) mouse_xpm ,(u16_t)x,(u16_t)y,frame_buffer);
+    draw_xpm((xpm_map_t) mouse_xpm[0] ,(u16_t)x,(u16_t)y,frame_buffer);
     memcpy((void *)video_mem,(void *)frame_buffer,vram_size);
     return 0;
 }
