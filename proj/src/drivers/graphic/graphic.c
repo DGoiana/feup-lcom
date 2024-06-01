@@ -148,17 +148,7 @@ void update_message_buffer(char *message, bool is_yours) {
     if(message[0] >= 'a') {
         return;
     }
-
-    // if(username != NULL && message == username){
-    //     return;
-    // }
-    // if(chatter_username != NULL && message == chatter_username){
-    //     return;
-    // }
-
-    if(username != NULL) printf("%s\n", username);
-    if(chatter_username != NULL) printf("%s\n", chatter_username);
-
+    
     strcat(joined_messages,message);
     if(message[strlen(message) - 1] == '.') {
         strcat(joined_messages,"\0"); 
