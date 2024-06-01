@@ -77,6 +77,7 @@ int (wait_for_esc_key)() {
   int text[MAX_NUM_MESSAGE] = {-1};
   int index = 0;
   bool done = false;
+  bool sent_username = false;
 
   while(data != ESC_KEY && !done)  {
 
@@ -109,9 +110,10 @@ int (wait_for_esc_key)() {
               for(int j = 0; j < index; j++) {
                   if(ser_send_poll(COM1_BASE, (char) message[j]) != 0) return 1;
               }
-              update_message_buffer(message);
+              update_message_buffer(message,true);
               index = 0;
               counter = 0;
+              sent_username = true;
             }
             }
 
@@ -122,14 +124,14 @@ int (wait_for_esc_key)() {
                       return 1;
                   }
                   ser_fifo_ih(base_addr,q,iir1);
-                  queue_dequeue_array(q, queue_size, text,&index);
+                  queue_dequeue_array(q, queue_size, text, &index);
                   char message[MAX_NUM_MESSAGE] = {'\0'};
                   for(int i =0; i < index; i++) {
                     message[i] = (char) alphabet[text[i]];
                   }
                   message[index] = '\0';
                   index = 0;
-                  update_message_buffer(message);
+                  update_message_buffer(message,false);
               } while(iir1 & SER_IIR_RX_AVAILABLE);
           }
 
@@ -139,7 +141,7 @@ int (wait_for_esc_key)() {
             if(read_error){
                 read_error = 0;
                 break;
-              }
+            }
             mouse_synch_packet();
             if(current_index == 3) {
               mouse_build_packet();
@@ -156,7 +158,7 @@ int (wait_for_esc_key)() {
 
           if(msg.m_notify.interrupts & BIT(timer_irq_set)){
             timer_int_handler();
-            update_buffer(text, index, counter > 10 && counter < 30 ? true : false,x_mouse,y_mouse);
+            update_buffer(text, index, counter > 10 && counter < 30 ? true : false, x_mouse, y_mouse);
             if(counter > 30) counter = 0;
           }
           break;

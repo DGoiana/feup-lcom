@@ -7,6 +7,8 @@
 char **messages = NULL;
 int num_messages = 0;
 char *joined_messages = NULL;
+char *chatter_username = NULL;
+char *username = NULL;
 
 void alloc_mem_messages_buffer() {
     messages = malloc(MAX_MESSAGE_NUM * sizeof(char *));
@@ -142,15 +144,37 @@ int update_buffer(int *text, uint index, bool blink,u16_t x_mouse,u16_t y_mouse)
     return 0;
 }
 
-void update_message_buffer(char *message) {
+void update_message_buffer(char *message, bool is_yours) {
     if(message[0] >= 'a') {
         return;
     }
+
+    // if(username != NULL && message == username){
+    //     return;
+    // }
+    // if(chatter_username != NULL && message == chatter_username){
+    //     return;
+    // }
+
+    if(username != NULL) printf("%s\n", username);
+    if(chatter_username != NULL) printf("%s\n", chatter_username);
+
     strcat(joined_messages,message);
     if(message[strlen(message) - 1] == '.') {
         strcat(joined_messages,"\0"); 
         char *r = malloc(sizeof(char) * strlen(joined_messages));
         strcpy(r,joined_messages);
+
+        if(username == NULL && is_yours && strlen(r) > 2){
+            username = r;
+            joined_messages[0] = '\0';
+            return;
+        }
+        if(chatter_username == NULL && !is_yours && strlen(r) > 2){
+            chatter_username = r;
+            joined_messages[0] = '\0';
+            return;
+        }
         joined_messages[0] = '\0';
         messages[num_messages] = r;
         num_messages++;
@@ -206,7 +230,21 @@ int formatBackground(void* buffer){
         drawPixel(x_1, y, VG_COLOR_WHITE, buffer);
         drawPixel(x_2, y, VG_COLOR_WHITE, buffer);
         j++;
-    } 
+    }
+
+    if(username != NULL && chatter_username != NULL){
+        draw_names(username, X_AXIS(0.8), Y_AXIS(0.1), buffer);
+        draw_names(chatter_username, X_AXIS(0.8), Y_AXIS(0.1) + 12, buffer);
+    }
+    return 0;
+}
+
+int draw_names(char* name, int x, int y, void* buffer){
+    for(uint i = 0; i < strlen(name) - 1; i++){
+        int index = name[i] - 'A';
+        draw_xpm((xpm_map_t) a_xpm[index], x, y, buffer);
+        x += 12;
+    }
     return 0;
 }
 

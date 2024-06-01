@@ -26,6 +26,7 @@ uint32_t vram_size;
 
 int startVideoMode(u16_t mode);
 int flip_buffer();
+int draw_names(char* name, int x, int y, void* buffer);
 void clear_buffer(void* buffer);
 int initFrameBuffer(u16_t mode);
 int drawRectangle(u16_t x, u16_t y, u16_t width, u16_t height, u32_t color, void* buffer);
@@ -38,7 +39,7 @@ int update_buffer(int *text, uint index, bool blink,u16_t x_mouse,u16_t y_mouse)
 int draw_mouse(int x,int y);
 int drawMessages(void* buffer);
 int reset_screen();
-void update_message_buffer(char *message) ;
+void update_message_buffer(char *message,bool is_yours) ;
 void free_message_buffer();
 void alloc_mem_messages_buffer();
 

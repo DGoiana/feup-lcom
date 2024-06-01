@@ -89,7 +89,6 @@ void queue_dequeue_array(queue_t *q, int queue_size, int *r,int *index){
     int buffer_size = 0;
     for(int i = 0; i < 8; i++){
         if(dequeue(q, &c) == 0 && c != 0) {
-            printf("queue element: %d\n",c);
             if(c == 46) {
                 r[i + *index] = 27;
             } else {
