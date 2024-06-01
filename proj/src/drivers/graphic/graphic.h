@@ -42,5 +42,6 @@ int reset_screen();
 void update_message_buffer(char *message,bool is_yours) ;
 void free_message_buffer();
 void alloc_mem_messages_buffer();
+int check_index(char character);
 
 #endif

@@ -183,10 +183,12 @@ void free_message_buffer() {
 
     u16_t x = X_AXIS(0.05);
     u16_t y = Y_AXIS(0.83) - (10 * LINES_PER_MESSAGE(num_messages - 1  < 0 ? 0 : num_messages - 1));
+
     for(int i = num_messages - 1; i >= 0; i--){
         u16_t initialY = y;
         for(uint j = 0; j < strlen(messages[i]); j++){
-            int index = messages[i][j] - 'A' < 0 ? 26 : messages[i][j] - 'A';
+            int index = check_index(messages[i][j]);
+            printf("index = %d\n", index);
             draw_xpm((xpm_map_t) a_xpm[index], x, y, buffer);
             
             if(x + 12 > X_AXIS(0.725)) {
@@ -203,6 +205,16 @@ void free_message_buffer() {
     }
     return 0;
  }
+
+int check_index(char character){
+    if(character >= 'A' && character <= 'Z'){
+        return character - 'A';
+    }
+    else if(character >= '0' && character <= '9'){
+        return character - '0' + 28;
+    }
+    return character == ' ' ? 26 : 27;
+}
 
 int formatBackground(void* buffer){
     drawRectangle(0, 0, x_res, y_res, VG_COLOR_WHITE, buffer);
@@ -231,7 +243,7 @@ int formatBackground(void* buffer){
 
 int draw_names(char* name, int x, int y, void* buffer){
     for(uint i = 0; i < strlen(name) - 1; i++){
-        int index = name[i] - 'A';
+        int index = check_index(name[i]);
         draw_xpm((xpm_map_t) a_xpm[index], x, y, buffer);
         x += 12;
     }

@@ -93,6 +93,7 @@ int (wait_for_esc_key)() {
             kbc_ih();
             int i = retrieve_letter(data);
             if(i != -1 || data == 0xe){
+              printf("%d\n", i);
               if(data == 0xe) {
                 index = MAX(index--,0);
               } else {
@@ -126,7 +127,7 @@ int (wait_for_esc_key)() {
                   ser_fifo_ih(base_addr,q,iir1);
                   queue_dequeue_array(q, queue_size, text, &index);
                   char message[MAX_NUM_MESSAGE] = {'\0'};
-                  for(int i =0; i < index; i++) {
+                  for(int i = 0; i < index; i++) {
                     message[i] = (char) alphabet[text[i]];
                   }
                   message[index] = '\0';
