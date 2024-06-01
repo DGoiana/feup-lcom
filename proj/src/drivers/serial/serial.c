@@ -135,6 +135,7 @@ int (ser_send_poll)(unsigned short base_addr,char c){
         return 1;
     } else {
         sys_outb(base_addr + SER_ADDR_TX_BUF,c);
+        return 0;
     }
     return 0;
 }

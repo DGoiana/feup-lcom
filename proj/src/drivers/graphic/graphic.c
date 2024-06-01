@@ -28,7 +28,8 @@ int flip_buffer() {
     reg.dx = current_buffer * mode_info.YResolution;
     reg.intno = 0x10;
 
-    current_buffer = (current_buffer + 1) % 2;
+    if(sys_int86(&reg) != OK) return 1;
+    current_buffer = (current_buffer + 1) % VG_NUM_BUFFER;
 
     return 0;
 
@@ -66,13 +67,15 @@ int initFrameBuffer(u16_t mode){
 
     struct minix_mem_range address;
     address.mr_base = mode_info.PhysBasePtr;
-    address.mr_limit = address.mr_base + 2 * vram_size;
+    address.mr_limit = address.mr_base + VG_NUM_BUFFER * vram_size;
 
     if(sys_privctl(SELF, SYS_PRIV_ADD_MEM, &address) != 0) return 1;
 
-    for(u8_t buffer = 0; buffer < 2; buffer++){
+    current_buffer = 0;
+    for(u8_t buffer = 0; buffer < VG_NUM_BUFFER; buffer++){
         buffers[buffer] = vm_map_phys(SELF, (void*) (address.mr_base + buffer * vram_size), vram_size);
         clear_buffer(buffers[buffer]);
+        buffer_changed[buffer] = false;
     }
 
     return 0;
@@ -110,28 +113,31 @@ int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer) {
     return 0;
 }
 
-int update_buffer(int *text, uint index, bool blink){
+int update_buffer(int *text, uint index, bool blink,u16_t x_mouse,u16_t y_mouse){
     u16_t x = X_AXIS(0.05);
     u16_t y = Y_AXIS(0.9);
-    formatBackground(buffers[current_buffer]);
+    u8_t next_buffer = (current_buffer + 1) % VG_NUM_BUFFER;
+    formatBackground(buffers[next_buffer]);
     if(num_messages > 0) {
-        drawMessages(buffers[current_buffer]);
+        drawMessages(buffers[next_buffer]);
     }
     for(uint i = 0; i < index; i++){
         if(text[i] != -1) {
             if(x + 12 > X_AXIS(0.7)){
                 x = X_AXIS(0.05);
                 y += 10;
-                draw_xpm((xpm_map_t) a_xpm[text[i]], x, y, buffers[current_buffer]);
+                draw_xpm((xpm_map_t) a_xpm[text[i]], x, y, buffers[next_buffer]);
                 x += 12;
             }
             else{
-                draw_xpm((xpm_map_t) a_xpm[text[i]], x, y, buffers[current_buffer]);
+                draw_xpm((xpm_map_t) a_xpm[text[i]], x, y, buffers[next_buffer]);
                 x += 12;
             }
         }
     }
-    if(blink) draw_xpm((xpm_map_t) mouse_xpm[1], x,y, buffers[current_buffer]);
+    if(blink) draw_xpm((xpm_map_t) mouse_xpm[1], x,y, buffers[next_buffer]);
+    draw_mouse(x_mouse,y_mouse);
+    buffer_changed[next_buffer] = true;
     flip_buffer();
     return 0;
 }
@@ -160,7 +166,8 @@ void free_message_buffer() {
 }
 
  int drawMessages(void* buffer){
-    u16_t x = X_AXIS(0.275);
+
+    u16_t x = X_AXIS(0.05);
     u16_t y = Y_AXIS(0.83) - (10 * LINES_PER_MESSAGE(num_messages - 1  < 0 ? 0 : num_messages - 1));
     for(int i = num_messages - 1; i >= 0; i--){
         u16_t initialY = y;
@@ -169,13 +176,13 @@ void free_message_buffer() {
             draw_xpm((xpm_map_t) a_xpm[index], x, y, buffer);
             
             if(x + 12 > X_AXIS(0.725)) {
-                x = X_AXIS(0.275);
+                x = X_AXIS(0.05);
                 y += 10;
             } else {
                 x += 12;
             }
         }
-        x = X_AXIS(0.275);
+        x = X_AXIS(0.05);
         if(i - 1 >= 0) y = initialY - (LINES_PER_MESSAGE(i-1)) * 20;
 
         if(y < Y_AXIS(0.075)) return 0;

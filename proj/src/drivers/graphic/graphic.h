@@ -9,6 +9,9 @@
 #define VG_COLOR_GRAY 0xd8e0e5
 #define VG_COLOR_RED 0xe25835
 
+
+#define VG_NUM_BUFFER 3
+
 #include <lcom/lcf.h>
 #include "math.h"
 
@@ -16,8 +19,9 @@ vbe_mode_info_t mode_info;
 u32_t bytesPerPixel;
 u16_t y_res;
 u16_t x_res;
-void* buffers[2] = {NULL, NULL};
-u8_t current_buffer = 0;
+void *buffers[VG_NUM_BUFFER];
+bool buffer_changed[VG_NUM_BUFFER];
+int current_buffer; 
 uint32_t vram_size;
 
 int startVideoMode(u16_t mode);
@@ -30,7 +34,7 @@ int drawPixel(u16_t x, u16_t y, u32_t color, void* buffer);
 int exitVideoMode();
 int formatBackground(void* buffer);
 int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer);
-int update_buffer(int *text, uint index, bool blink);
+int update_buffer(int *text, uint index, bool blink,u16_t x_mouse,u16_t y_mouse);
 int draw_mouse(int x,int y);
 int drawMessages(void* buffer);
 int reset_screen();

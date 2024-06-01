@@ -7,6 +7,8 @@
 #include "../../drivers/mouse/i8042.h"
 #include "../../drivers/utils/utils.h"
 
+#define MAX_NUM_MESSAGE 1024
+
 extern char* alphabet;
 
 /* FOR TESTING PURPOSES */
@@ -45,15 +47,15 @@ int (wait_for_esc_key)() {
   extern int current_index;
   extern struct packet pp;
   extern bool read_error;
-  int x;
-  int y;
+  int x_mouse;
+  int y_mouse;
 
   uint8_t keyboard_irq_set;
   keyboard_subscribe_int(&keyboard_irq_set);
 
   uint8_t timer_irq_set;
   timer_subscribe_int(&timer_irq_set);
-  timer_set_frequency(TIMER_SEL0, 60);
+  timer_set_frequency(TIMER_SEL0, 30);
 
   int ipc_status,r;
   message msg;
@@ -72,7 +74,7 @@ int (wait_for_esc_key)() {
   if((q = new_queue(queue_size)) == NULL) return -1;
 
 
-  int text[100] = {-1};
+  int text[MAX_NUM_MESSAGE] = {-1};
   int index = 0;
   bool done = false;
 
@@ -97,7 +99,7 @@ int (wait_for_esc_key)() {
                 index++;
               }
             } else if (data == 0x1c) {
-              char message[100] = {'\0'};
+              char message[MAX_NUM_MESSAGE] = {'\0'};
               for(int i = 0; i < index; i++){
                 message[i] = (char) alphabet[text[i]];
               }
@@ -107,13 +109,13 @@ int (wait_for_esc_key)() {
               for(int j = 0; j < index; j++) {
                   if(ser_send_poll(COM1_BASE, (char) message[j]) != 0) return 1;
               }
+              update_message_buffer(message);
               index = 0;
               counter = 0;
-              update_message_buffer(message);
             }
-          }
+            }
 
-          if(msg.m_notify.interrupts & BIT(ser_irq_set)) {
+            if(msg.m_notify.interrupts & BIT(ser_irq_set)) {
               do {
                   if(util_sys_inb(base_addr + SER_ADDR_IIR,&iir1) != 0) {
                       printf("failed to read iir1\n");
@@ -121,14 +123,14 @@ int (wait_for_esc_key)() {
                   }
                   ser_fifo_ih(base_addr,q,iir1);
                   queue_dequeue_array(q, queue_size, text,&index);
-                  char message[100] = {'\0'};
+                  char message[MAX_NUM_MESSAGE] = {'\0'};
                   for(int i =0; i < index; i++) {
                     message[i] = (char) alphabet[text[i]];
                   }
                   message[index] = '\0';
                   index = 0;
                   update_message_buffer(message);
-               } while(iir1 & SER_IIR_RX_AVAILABLE);
+              } while(iir1 & SER_IIR_RX_AVAILABLE);
           }
 
           if(msg.m_notify.interrupts & BIT(mouse_irq_set)) {
@@ -142,10 +144,10 @@ int (wait_for_esc_key)() {
             if(current_index == 3) {
               mouse_build_packet();
               num_packet++;
-              x = MIN(MAX(pp.delta_x + x,0),x_res - 10);
-              y = MIN(MAX(abs(pp.delta_y - y),0),y_res - 10);
+              x_mouse = MIN(MAX(pp.delta_x + x_mouse,0),x_res - 10);
+              y_mouse = MIN(MAX(abs(pp.delta_y - y_mouse),0),y_res - 10);
               struct collision_box exit_box = {x_res * 0.95, y_res * 0.0175, y_res * 0.04, y_res * 0.04};
-              if(pp.lb && mouse_collision(x,y,exit_box)) {
+              if(pp.lb && mouse_collision(x_mouse,y_mouse,exit_box)) {
                 done = true;
               }
               current_index = 0;
@@ -154,11 +156,9 @@ int (wait_for_esc_key)() {
 
           if(msg.m_notify.interrupts & BIT(timer_irq_set)){
             timer_int_handler();
-            update_buffer(text, index, false);
-            draw_mouse(x,y);
+            update_buffer(text, index, counter > 10 && counter < 30 ? true : false,x_mouse,y_mouse);
+            if(counter > 30) counter = 0;
           }
-
-
           break;
         default:
           break;
