@@ -12,9 +12,6 @@ typedef struct DATE{
     uint8_t hours;
 } DATE;
 
-/**
- * @brief This file stores all the rtc related functions.\n
-*/
 int (rtc_read_reg)(uint8_t reg, uint8_t *conf);
 int (rtc_get_year)(uint8_t *y);
 int (rtc_get_month)(uint8_t *m);

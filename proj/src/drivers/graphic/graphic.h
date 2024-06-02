@@ -33,25 +33,105 @@ uint32_t vram_size;
  * buffer_changed[]: Array that stores if a buffer has any changes(with only 2 buffers is not really used, but it can scale).\n
  * current_buffer: Index of the buffer that is being modified.\n
 */
+
+
+/**
+ * @brief Starts the video mode on the current PC.\n
+*/
 int startVideoMode(u16_t mode);
+/**
+ * @brief Flips buffers. (Related to Page Flipping)\n
+*/
 int flip_buffer();
+/**
+ * @brief Draw the usernames on the side.\n
+*/
 int draw_names(char* name, int x, int y, void* buffer);
+
+/**
+ * @brief Clear a buffer.\n
+*/
 void clear_buffer(void* buffer);
+
+/**
+ * @brief Initializes the frame buffer.\n
+*/
 int initFrameBuffer(u16_t mode);
+
+/**
+ * @brief Draws Rectangle.\n
+*/
 int drawRectangle(u16_t x, u16_t y, u16_t width, u16_t height, u32_t color, void* buffer);
+
+/**
+ * @brief Draws Line.\n
+*/
 int drawLine(u16_t x, u16_t y, u16_t width, u32_t color, void* buffer);
+
+
+/**
+ * @brief Draws Pixel.\n
+*/
 int drawPixel(u16_t x, u16_t y, u32_t color, void* buffer);
+
+/**
+ * @brief Exits video mode.\n
+*/
 int exitVideoMode();
+
+/**
+ * @brief Formats the background(drawing the background).\n
+*/
 int formatBackground(void* buffer);
+
+/**
+ * @brief Draws a XPM.\n
+*/
 int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer);
+
+/**
+ * @brief Updates the current buffer.\n
+*/
 int update_buffer(int *text, uint index, bool blink,u16_t x_mouse,u16_t y_mouse, bool right_click);
+
+/**
+ * @brief Draws the mouse xpm on a given position.\n
+*/
 int draw_mouse(int x,int y);
+
+/**
+ * @brief Draws the current messages.\n
+*/
 int drawMessages(void* buffer,bool blink,u16_t x_mouse, u16_t y_mouse,bool right_click);
+
+/**
+ * @brief Resets the screen.\n
+*/
 int reset_screen();
+
+/**
+ * @brief Updates the current message buffer.\n
+*/
 void update_message_buffer(char *message,bool is_yours) ;
+
+/**
+ * @brief Frees message buffer.\n
+*/
 void free_message_buffer();
+
+/**
+ * @brief Allocates memory to the message buffer.\n
+*/
 void alloc_mem_messages_buffer();
+
+/**
+ * @brief Transforms character in index of the alphabet array.\n
+*/
 int check_index(char character);
+
+/**
+ * @brief Draws the app title.\n
+*/
 int draw_title(int x,int y,void *buffer) ;
 
 #endif

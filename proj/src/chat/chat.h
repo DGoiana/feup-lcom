@@ -28,6 +28,9 @@ extern bool *seen;
  * 
 */
 int (chat_main)();
+/**
+ * @brief Main display of the program.\n
+*/
 int (chat_display)();
 
 #endif
