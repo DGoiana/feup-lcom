@@ -6,6 +6,10 @@
 struct queue;
 typedef struct queue queue_t;
 
+/**
+ * @brief This file stores all the queue related functions.\n
+ * The queue data structure aims to help on the serial port functionalities.\n
+*/
 queue_t *new_queue(unsigned int ini_size); // constructor
 void delete_queue(queue_t *q); // destructor
 

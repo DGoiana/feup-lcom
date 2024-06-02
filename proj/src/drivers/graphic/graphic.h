@@ -1,9 +1,13 @@
 #ifndef _LCOM_GRAPHIC_H
 #define _LCOM_GRAPHIC_H
 
+#include <lcom/lcf.h>
+#include "math.h"
+
 #define LINES_PER_MESSAGE(i) (strlen(messages[i]) / (x_res * 0.425 / 12)  )
 #define Y_AXIS(y) y_res * y
 #define X_AXIS(x) x_res * x
+
 #define VG_COLOR_WHITE 0xFFFFFF
 #define VG_COLOR_BLUE 0x0156e6
 #define VG_COLOR_GRAY 0xd8e0e5
@@ -11,11 +15,7 @@
 #define VG_COLOR_LIGHT_BLUE 0x89CFF0
 #define VG_COLOR_BLACK 0x191970 
 
-
 #define VG_NUM_BUFFER 3
-
-#include <lcom/lcf.h>
-#include "math.h"
 
 vbe_mode_info_t mode_info;
 u32_t bytesPerPixel;
@@ -26,6 +26,13 @@ bool buffer_changed[VG_NUM_BUFFER];
 int current_buffer; 
 uint32_t vram_size;
 
+/**
+ * @brief All the functions related to graphics can be found in this file.Using page flipping between 2 different buffers, all the graphics in the chat are drawn.\n
+ * mode_info: Defines the screen attributes\n
+ * buffers[]: Array of the buffers that are involved in the page flipping.\n
+ * buffer_changed[]: Array that stores if a buffer has any changes(with only 2 buffers is not really used, but it can scale).\n
+ * current_buffer: Index of the buffer that is being modified.\n
+*/
 int startVideoMode(u16_t mode);
 int flip_buffer();
 int draw_names(char* name, int x, int y, void* buffer);

@@ -7,7 +7,7 @@
 #include "../../drivers/mouse/mouse.h"
 
 #define MAX_MESSAGE_NUM 10000
-#define DARK_MODE_HOUR 12
+#define DARK_MODE_HOUR 20
 
 
 char **messages = NULL;

@@ -6,6 +6,9 @@
 #include "queue.h"
 #include "../utils/utils.h"
 
+/**
+ * @brief This file stores all the serial port related functions.\n
+*/
 int (ser_print_conf)(unsigned short base_addr);
 int (ser_set)(unsigned short base_addr,unsigned long bits,unsigned long stop,long parity,unsigned long rate);
 int (ser_send_poll)(unsigned short base_addr,char c);
