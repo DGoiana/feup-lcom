@@ -1,6 +1,7 @@
 #include "graphic.h"
 #include "../../assets/letters.xpm"
 #include "../../assets/mouse.xpm"
+#include "../../drivers/rtc/rtc.h"
 
 #define MAX_MESSAGE_NUM 10000
 
@@ -145,14 +146,16 @@ int update_buffer(int *text, uint index, bool blink,u16_t x_mouse,u16_t y_mouse)
 }
 
 void update_message_buffer(char *message, bool is_yours) {
+    char *date = rtc_get_date_str();
     if(message[0] >= 'a') {
         return;
     }
-    
     strcat(joined_messages,message);
     if(message[strlen(message) - 1] == '.') {
         strcat(joined_messages,"\0"); 
-        char *r = malloc(sizeof(char) * strlen(joined_messages));
+
+        char *r = malloc(sizeof(char) * (strlen(joined_messages) + 100));
+        //strcpy(r,is_yours ? username : chatter_username);
         strcpy(r,joined_messages);
 
         if(username == NULL && is_yours && strlen(r) > 2){
@@ -165,6 +168,30 @@ void update_message_buffer(char *message, bool is_yours) {
             joined_messages[0] = '\0';
             return;
         }
+
+        char m[1024];
+        uint current_index = 0;
+        char *user = is_yours ? username : chatter_username;
+
+        while(current_index < strlen(date)) {
+            m[current_index] = date[current_index];
+            current_index++;
+        }
+        for(uint i = 0; i < strlen(user); i++) {
+            m[current_index + i] = user[i];
+        }
+        current_index += strlen(user);
+        for(uint i = 0; i < strlen(r); i++) {
+            m[current_index + i] = r[i];
+        }
+
+        m[strlen(joined_messages) + strlen(date) + strlen(user) + strlen(r)] = '\0';
+
+        //strcat(rr,date);
+        //strcat(rr,sender);
+
+        strcpy(r,m);
+
         joined_messages[0] = '\0';
         messages[num_messages] = r;
         num_messages++;
@@ -188,7 +215,6 @@ void free_message_buffer() {
         u16_t initialY = y;
         for(uint j = 0; j < strlen(messages[i]); j++){
             int index = check_index(messages[i][j]);
-            printf("index = %d\n", index);
             draw_xpm((xpm_map_t) a_xpm[index], x, y, buffer);
             
             if(x + 12 > X_AXIS(0.725)) {
@@ -213,6 +239,10 @@ int check_index(char character){
     else if(character >= '0' && character <= '9'){
         return character - '0' + 28;
     }
+    if(character == '-') return 39;
+    if(character == '[') return 40;
+    if(character == ']') return 41;
+
     return character == ' ' ? 26 : 27;
 }
 

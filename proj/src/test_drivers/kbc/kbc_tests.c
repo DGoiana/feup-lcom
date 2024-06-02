@@ -132,6 +132,7 @@ int (wait_for_esc_key)() {
                   }
                   message[index] = '\0';
                   index = 0;
+                  printf("received message: %s\n",message);
                   update_message_buffer(message,false);
               } while(iir1 & SER_IIR_RX_AVAILABLE);
           }

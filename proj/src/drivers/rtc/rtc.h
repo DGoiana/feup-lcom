@@ -30,3 +30,5 @@ int (rtc_get_date_bcd)(DATE *date);
 * Returns the current date stored in Decimal Format
 */
 int (rtc_get_date_decimal)(DATE *date);
+
+char *(rtc_get_date_str)();
