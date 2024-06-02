@@ -11,6 +11,8 @@
 
 extern char* alphabet;
 extern bool in_menu;
+extern int num_messages;
+extern bool seen;
 
 /* FOR TESTING PURPOSES */
 int (test_timer)() {

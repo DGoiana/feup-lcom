@@ -3,11 +3,14 @@
 #include "../../assets/mouse.xpm"
 #include "../../drivers/rtc/rtc.h"
 #include "../../assets/title.xpm"
+#include "../../drivers/mouse/mouse.h"
 
 #define MAX_MESSAGE_NUM 10000
 
+
 char **messages = NULL;
 int num_messages = 0;
+bool seen[1024] = {false};
 char *joined_messages = NULL;
 char *chatter_username = NULL;
 char *username = NULL;
@@ -124,7 +127,7 @@ int update_buffer(int *text, uint index, bool blink,u16_t x_mouse,u16_t y_mouse)
     u8_t next_buffer = (current_buffer + 1) % VG_NUM_BUFFER;
     formatBackground(buffers[next_buffer]);
     if(num_messages > 0) {
-        drawMessages(buffers[next_buffer]);
+        drawMessages(buffers[next_buffer],blink,x_mouse,y_mouse);
     }
     for(uint i = 0; i < index; i++){
         if(text[i] != -1) {
@@ -208,16 +211,20 @@ void free_message_buffer() {
     free(joined_messages);
 }
 
- int drawMessages(void* buffer){
+ int drawMessages(void* buffer,bool blink,u16_t x_mouse, u16_t y_mouse){
 
     u16_t x = X_AXIS(0.05);
     u16_t y = Y_AXIS(0.83) - (10 * LINES_PER_MESSAGE(num_messages - 1  < 0 ? 0 : num_messages - 1));
 
     for(int i = num_messages - 1; i >= 0; i--){
         u16_t initialY = y;
+        struct collision_box new_message_box = {x - X_AXIS(0.02),y,X_AXIS(0.01),X_AXIS(0.01)};
+        if(mouse_collision(x_mouse,y_mouse,new_message_box)) seen[i] = true;
+        if(blink && !seen[i]) drawRectangle(x - X_AXIS(0.02),y,X_AXIS(0.01),Y_AXIS(0.01),VG_COLOR_RED,buffer);
         for(uint j = 0; j < strlen(messages[i]); j++){
             int index = check_index(messages[i][j]);
             draw_xpm((xpm_map_t) a_xpm[index], x, y, buffer);
+            //drawRectangle(x + X_AXIS(0.05),y,X_AXIS(0.01),Y_AXIS(0.01),VG_COLOR_RED,buffer);
             
             if(x + 12 > X_AXIS(0.725)) {
                 x = X_AXIS(0.05);
@@ -227,7 +234,7 @@ void free_message_buffer() {
             }
         }
         x = X_AXIS(0.05);
-        if(i - 1 >= 0) y = initialY - (LINES_PER_MESSAGE(i-1)) * 10;
+        if(i - 1 >= 0) y = initialY - (LINES_PER_MESSAGE(i-1)) * 12;
         if(y < Y_AXIS(0.075)) return 0;
     }
     return 0;

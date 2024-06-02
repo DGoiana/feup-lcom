@@ -37,7 +37,7 @@ int formatBackground(void* buffer);
 int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer);
 int update_buffer(int *text, uint index, bool blink,u16_t x_mouse,u16_t y_mouse);
 int draw_mouse(int x,int y);
-int drawMessages(void* buffer);
+int drawMessages(void* buffer,bool blink,u16_t x_mouse, u16_t y_mouse);
 int reset_screen();
 void update_message_buffer(char *message,bool is_yours) ;
 void free_message_buffer();
