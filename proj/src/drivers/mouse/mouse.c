@@ -113,8 +113,8 @@ void mouse_synch_packet() {
 }
 
 bool (mouse_collision)(u16_t x,u16_t y,struct collision_box collision_box) {
-  u16_t x_diff = x - collision_box.x;
-  u16_t y_diff = y - collision_box.y;
+  u16_t x_diff = (x - collision_box.x);
+  u16_t y_diff = (y - collision_box.y);
 
-  return x_diff < collision_box.width && y_diff - collision_box.height;
+  return x_diff < collision_box.width && y_diff < collision_box.height;
 }

@@ -147,8 +147,8 @@ int (chat_display)() {
               x_mouse = MIN(MAX(pp.delta_x + x_mouse,0),x_res - 10);
               y_mouse = MIN(MAX(abs(pp.delta_y - y_mouse),0),y_res - 10);
               struct collision_box exit_box = {x_res * 0.95, y_res * 0.0175, y_res * 0.04, y_res * 0.04};
-              struct collision_box blue_pill = {X_AXIS(0.1),Y_AXIS(0.4),X_AXIS(0.2),Y_AXIS(0.1)};
-              struct collision_box red_pill = {X_AXIS(0.4),Y_AXIS(0.4),X_AXIS(0.2),Y_AXIS(0.1)};
+              struct collision_box blue_pill = {X_AXIS(0.1),Y_AXIS(0.3),X_AXIS(0.2),Y_AXIS(0.1)};
+              struct collision_box red_pill = {X_AXIS(0.4),Y_AXIS(0.3),X_AXIS(0.2),Y_AXIS(0.1)};
               if(in_menu && pp.lb) {
                 if(mouse_collision(x_mouse,y_mouse,blue_pill)) {
                   in_menu = false;

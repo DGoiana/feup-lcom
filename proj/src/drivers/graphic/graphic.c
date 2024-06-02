@@ -281,12 +281,12 @@ int formatBackground(void* buffer){
         drawRectangle(X_AXIS(0.1),Y_AXIS(0.3),X_AXIS(0.2),Y_AXIS(0.1),VG_COLOR_BLUE,buffer);
         for(uint i = 0; i < strlen(enter);i++) {
             int index = check_index(enter[i]);
-            draw_xpm((xpm_map_t) a_xpm[index],X_AXIS(0.15) + (12 * i),Y_AXIS(0.34),buffer);
+            draw_xpm((xpm_map_t) white_xpm[index],X_AXIS(0.15) + (12 * i),Y_AXIS(0.34),buffer);
         }
         drawRectangle(X_AXIS(0.4),Y_AXIS(0.3),X_AXIS(0.2),Y_AXIS(0.1),VG_COLOR_RED,buffer);
         for(uint i = 0; i < strlen(exit);i++) {
             int index = check_index(exit[i]);
-            draw_xpm((xpm_map_t) a_xpm[index],X_AXIS(0.46) + (12 * i),Y_AXIS(0.34),buffer);
+            draw_xpm((xpm_map_t) white_xpm[index],X_AXIS(0.46) + (12 * i),Y_AXIS(0.34),buffer);
         }
     }
 
