@@ -8,6 +8,8 @@
 #define VG_COLOR_BLUE 0x0156e6
 #define VG_COLOR_GRAY 0xd8e0e5
 #define VG_COLOR_RED 0xe25835
+#define VG_COLOR_LIGHT_BLUE 0x89CFF0
+#define VG_COLOR_BLACK 0x191970 
 
 
 #define VG_NUM_BUFFER 3

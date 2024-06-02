@@ -1,11 +1,13 @@
 #include "graphic.h"
 #include "../../assets/letters.xpm"
 #include "../../assets/mouse.xpm"
+#include "../../assets/white_letters.xpm"
 #include "../../drivers/rtc/rtc.h"
 #include "../../assets/title.xpm"
 #include "../../drivers/mouse/mouse.h"
 
 #define MAX_MESSAGE_NUM 10000
+#define DARK_MODE_HOUR 12
 
 
 char **messages = NULL;
@@ -15,6 +17,8 @@ char *joined_messages = NULL;
 char *chatter_username = NULL;
 char *username = NULL;
 bool in_menu = true;
+DATE date;
+int current_hour = 0;
 
 void alloc_mem_messages_buffer() {
     messages = malloc(MAX_MESSAGE_NUM * sizeof(char *));
@@ -85,6 +89,15 @@ int initFrameBuffer(u16_t mode){
         clear_buffer(buffers[buffer]);
         buffer_changed[buffer] = false;
     }
+
+
+	if (rtc_get_date_decimal(&date) != 0) {
+		printf("Error fetching current date...\n");
+		return 1;
+	}
+
+    current_hour = date.hours;
+    printf("%d\n",current_hour);
 
     return 0;
 }
@@ -223,8 +236,7 @@ void free_message_buffer() {
         if(blink && !seen[i]) drawRectangle(x - X_AXIS(0.02),y,X_AXIS(0.01),Y_AXIS(0.01),VG_COLOR_RED,buffer);
         for(uint j = 0; j < strlen(messages[i]); j++){
             int index = check_index(messages[i][j]);
-            draw_xpm((xpm_map_t) a_xpm[index], x, y, buffer);
-            //drawRectangle(x + X_AXIS(0.05),y,X_AXIS(0.01),Y_AXIS(0.01),VG_COLOR_RED,buffer);
+            draw_xpm(current_hour > DARK_MODE_HOUR ? (xpm_map_t) white_xpm[index] : (xpm_map_t) a_xpm[index], x, y, buffer);
             
             if(x + 12 > X_AXIS(0.725)) {
                 x = X_AXIS(0.05);
@@ -255,13 +267,13 @@ int check_index(char character){
 }
 
 int formatBackground(void* buffer){
-    drawRectangle(0, 0, x_res, y_res, VG_COLOR_WHITE, buffer);
+    drawRectangle(0, 0, x_res, y_res, current_hour > DARK_MODE_HOUR ? VG_COLOR_BLACK : VG_COLOR_WHITE, buffer);
     drawRectangle(0, 0, x_res, Y_AXIS(0.075), VG_COLOR_BLUE, buffer);
 
-    drawRectangle(X_AXIS(0.75), Y_AXIS(0.075), X_AXIS(0.25), Y_AXIS(0.925), VG_COLOR_GRAY, buffer);
+    drawRectangle(X_AXIS(0.75), Y_AXIS(0.075), X_AXIS(0.25), Y_AXIS(0.925), current_hour > DARK_MODE_HOUR ? VG_COLOR_LIGHT_BLUE : VG_COLOR_GRAY, buffer);
     drawRectangle(X_AXIS(0.95), Y_AXIS(0.0175), Y_AXIS(0.04), Y_AXIS(0.04), VG_COLOR_RED, buffer);
     if(!in_menu) {
-        drawRectangle(X_AXIS(0.05), Y_AXIS(0.9), X_AXIS(0.65), Y_AXIS(0.05), VG_COLOR_GRAY, buffer);  
+        drawRectangle(X_AXIS(0.05), Y_AXIS(0.9), X_AXIS(0.65), Y_AXIS(0.05), current_hour > DARK_MODE_HOUR ? VG_COLOR_LIGHT_BLUE : VG_COLOR_GRAY, buffer);  
     } else {
         draw_title(X_AXIS(0.05),Y_AXIS(0.1),buffer);
         drawRectangle(X_AXIS(0.1),Y_AXIS(0.4),X_AXIS(0.2),Y_AXIS(0.1),VG_COLOR_BLUE,buffer);
@@ -274,7 +286,7 @@ int formatBackground(void* buffer){
         if(username != NULL && chatter_username == NULL) add_username = "WAITING FOR OTHER USER";
         for(uint i = 0; i < strlen(add_username);i++) {
             int index = check_index(add_username[i]);
-            draw_xpm((xpm_map_t) a_xpm[index],X_AXIS(0.05) + (12 * i),Y_AXIS(0.85),buffer);
+            draw_xpm(current_hour > DARK_MODE_HOUR ? (xpm_map_t) white_xpm[index] : (xpm_map_t) a_xpm[index],X_AXIS(0.05) + (12 * i),Y_AXIS(0.85),buffer);
         }
 
     }
@@ -299,7 +311,7 @@ int formatBackground(void* buffer){
 int draw_names(char* name, int x, int y, void* buffer){
     for(uint i = 0; i < strlen(name) - 1; i++){
         int index = check_index(name[i]);
-        draw_xpm((xpm_map_t) a_xpm[index], x, y, buffer);
+        draw_xpm(current_hour > DARK_MODE_HOUR ? (xpm_map_t) white_xpm[index] : (xpm_map_t) a_xpm[index], x, y, buffer);
         if(x + 12 > X_AXIS(0.9)) {
             x = X_AXIS(0.8);
             y += 10;
@@ -311,7 +323,7 @@ int draw_names(char* name, int x, int y, void* buffer){
 }
 
 int draw_mouse(int x,int y){
-    draw_xpm((xpm_map_t) mouse_xpm[0] ,(u16_t)x,(u16_t)y,buffers[current_buffer]);
+    draw_xpm(current_hour > DARK_MODE_HOUR ? (xpm_map_t) mouse_xpm[2] : (xpm_map_t) mouse_xpm[0] ,(u16_t)x,(u16_t)y,buffers[current_buffer]);
     return 0;
 }
 
