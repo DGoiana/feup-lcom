@@ -1,16 +1,11 @@
 #include <lcom/lcf.h>
-#include <lcom/lab2.h>
-
 #include <stdbool.h>
 #include <stdint.h>
+#include "chat/chat.h"
 
-#include "test_drivers/kbc/kbc_tests.h"
-#include "test_drivers/serial/serial_tests.h"
-#include "drivers/serial/uart.h"
-#include "test_drivers/graphics/graphics_test.h"
-
-#include "test_drivers/rtc/rtc_tests.h"
-
+/**
+ * @brief Main file where the main loop function is called
+*/
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
   lcf_set_language("EN-US");
@@ -37,7 +32,7 @@ int main(int argc, char *argv[]) {
 
 
 int(proj_main_loop)(int argc,char* argv[]) {
-  test_graphic();
+  chat_main();
   return 0;
 }
 

@@ -4,6 +4,9 @@
 #include <lcom/lcf.h>
 #include "../mouse/i8042.h"
 
+/**
+ * @brief This file stores all the keyboard related functions.\n
+*/
 void (kbc_ih)();
 void (keyboard_subscribe_int)(uint8_t *bit_no);
 void (keyboard_unsubscribe_int)();

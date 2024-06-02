@@ -6,6 +6,9 @@
 #include "../../drivers/utils/utils.h"
 
 
+/**
+ * @brief This file stores all the mouse related functions.\n
+*/
 int (kbc_write_register)(uint8_t port,uint8_t message);
 int (kbc_read_register)(uint8_t port, uint8_t *message);
 int (mouse_write_register)(uint8_t command);

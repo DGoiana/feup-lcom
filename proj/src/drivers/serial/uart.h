@@ -1,7 +1,7 @@
 #include <lcom/lcf.h>
 
 #define SER_MAX_BIT_RATE 115200
-#define SER_MAX_TRIES 5
+#define SER_MAX_TRIES 3
 #define DELAY_US 20000
 #define QUEUE_SIZE 8
 

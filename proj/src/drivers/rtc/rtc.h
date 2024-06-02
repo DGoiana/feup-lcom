@@ -12,6 +12,9 @@ typedef struct DATE{
     uint8_t hours;
 } DATE;
 
+/**
+ * @brief This file stores all the rtc related functions.\n
+*/
 int (rtc_read_reg)(uint8_t reg, uint8_t *conf);
 int (rtc_get_year)(uint8_t *y);
 int (rtc_get_month)(uint8_t *m);
@@ -30,3 +33,5 @@ int (rtc_get_date_bcd)(DATE *date);
 * Returns the current date stored in Decimal Format
 */
 int (rtc_get_date_decimal)(DATE *date);
+
+char *(rtc_get_date_str)();
