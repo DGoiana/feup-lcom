@@ -1,7 +1,7 @@
 #ifndef _LCOM_GRAPHIC_H
 #define _LCOM_GRAPHIC_H
 
-#define LINES_PER_MESSAGE(i) (strlen(messages[i]) / (x_res * 0.425 / 12) + 1)
+#define LINES_PER_MESSAGE(i) (strlen(messages[i]) / (x_res * 0.425 / 12)  )
 #define Y_AXIS(y) y_res * y
 #define X_AXIS(x) x_res * x
 #define VG_COLOR_WHITE 0xFFFFFF
@@ -43,5 +43,6 @@ void update_message_buffer(char *message,bool is_yours) ;
 void free_message_buffer();
 void alloc_mem_messages_buffer();
 int check_index(char character);
+int draw_title(int x,int y,void *buffer) ;
 
 #endif

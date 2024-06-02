@@ -2,6 +2,7 @@
 #include "../../assets/letters.xpm"
 #include "../../assets/mouse.xpm"
 #include "../../drivers/rtc/rtc.h"
+#include "../../assets/title.xpm"
 
 #define MAX_MESSAGE_NUM 10000
 
@@ -10,6 +11,7 @@ int num_messages = 0;
 char *joined_messages = NULL;
 char *chatter_username = NULL;
 char *username = NULL;
+bool in_menu = true;
 
 void alloc_mem_messages_buffer() {
     messages = malloc(MAX_MESSAGE_NUM * sizeof(char *));
@@ -109,7 +111,7 @@ int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer) {
     u32_t *map = (u32_t*) xpm_load(xpm, XPM_8_8_8_8, &img);
     for(int i = 0; i < img.height; i++){
         for(int j = 0; j < img.width; j++){
-            drawPixel(x + j, y + i, *map, buffer);
+            if(*map != 0x00ff00) drawPixel(x + j, y + i, *map, buffer);
             map++;
         }
     }
@@ -138,7 +140,7 @@ int update_buffer(int *text, uint index, bool blink,u16_t x_mouse,u16_t y_mouse)
             }
         }
     }
-    if(blink) draw_xpm((xpm_map_t) mouse_xpm[1], x,y, buffers[next_buffer]);
+    if(blink && !in_menu) draw_xpm((xpm_map_t) mouse_xpm[1], x,y, buffers[next_buffer]);
     draw_mouse(x_mouse,y_mouse);
     buffer_changed[next_buffer] = true;
     flip_buffer();
@@ -185,7 +187,7 @@ void update_message_buffer(char *message, bool is_yours) {
             m[current_index + i] = r[i];
         }
 
-        m[strlen(joined_messages) + strlen(date) + strlen(user) + strlen(r)] = '\0';
+        m[strlen(joined_messages) + strlen(date) + strlen(user)] = '\0';
 
         //strcat(rr,date);
         //strcat(rr,sender);
@@ -225,8 +227,7 @@ void free_message_buffer() {
             }
         }
         x = X_AXIS(0.05);
-        if(i - 1 >= 0) y = initialY - (LINES_PER_MESSAGE(i-1)) * 20;
-
+        if(i - 1 >= 0) y = initialY - (LINES_PER_MESSAGE(i-1)) * 10;
         if(y < Y_AXIS(0.075)) return 0;
     }
     return 0;
@@ -251,8 +252,25 @@ int formatBackground(void* buffer){
     drawRectangle(0, 0, x_res, Y_AXIS(0.075), VG_COLOR_BLUE, buffer);
 
     drawRectangle(X_AXIS(0.75), Y_AXIS(0.075), X_AXIS(0.25), Y_AXIS(0.925), VG_COLOR_GRAY, buffer);
-    drawRectangle(X_AXIS(0.95), Y_AXIS(0.0175), Y_AXIS(0.04), Y_AXIS(0.04), VG_COLOR_RED, buffer);       
-    drawRectangle(X_AXIS(0.05), Y_AXIS(0.9), X_AXIS(0.65), Y_AXIS(0.05), VG_COLOR_GRAY, buffer);  
+    drawRectangle(X_AXIS(0.95), Y_AXIS(0.0175), Y_AXIS(0.04), Y_AXIS(0.04), VG_COLOR_RED, buffer);
+    if(!in_menu) {
+        drawRectangle(X_AXIS(0.05), Y_AXIS(0.9), X_AXIS(0.65), Y_AXIS(0.05), VG_COLOR_GRAY, buffer);  
+    } else {
+        draw_title(X_AXIS(0.05),Y_AXIS(0.1),buffer);
+        drawRectangle(X_AXIS(0.1),Y_AXIS(0.4),X_AXIS(0.2),Y_AXIS(0.1),VG_COLOR_BLUE,buffer);
+        drawRectangle(X_AXIS(0.4),Y_AXIS(0.4),X_AXIS(0.2),Y_AXIS(0.1),VG_COLOR_RED,buffer);
+    }
+
+    if(!in_menu) {
+        char *add_username = "";
+        if(username == NULL) add_username = "DEFINE YOUR USERNAME";
+        if(username != NULL && chatter_username == NULL) add_username = "WAITING FOR OTHER USER";
+        for(uint i = 0; i < strlen(add_username);i++) {
+            int index = check_index(add_username[i]);
+            draw_xpm((xpm_map_t) a_xpm[index],X_AXIS(0.05) + (12 * i),Y_AXIS(0.85),buffer);
+        }
+
+    }
 
     int j = 0;
     for(int i = 0; i < Y_AXIS(0.02); i++){
@@ -266,7 +284,7 @@ int formatBackground(void* buffer){
 
     if(username != NULL && chatter_username != NULL){
         draw_names(username, X_AXIS(0.8), Y_AXIS(0.1), buffer);
-        draw_names(chatter_username, X_AXIS(0.8), Y_AXIS(0.1) + 12, buffer);
+        draw_names(chatter_username, X_AXIS(0.8), Y_AXIS(0.1) + (strlen(username) / 7 + 1)*10, buffer);
     }
     return 0;
 }
@@ -275,7 +293,12 @@ int draw_names(char* name, int x, int y, void* buffer){
     for(uint i = 0; i < strlen(name) - 1; i++){
         int index = check_index(name[i]);
         draw_xpm((xpm_map_t) a_xpm[index], x, y, buffer);
-        x += 12;
+        if(x + 12 > X_AXIS(0.9)) {
+            x = X_AXIS(0.8);
+            y += 10;
+         } else {
+            x += 12;
+        }
     }
     return 0;
 }
@@ -287,5 +310,12 @@ int draw_mouse(int x,int y){
 
 int reset_screen() {
     drawRectangle(0,0,x_res,y_res,0x0,buffers[current_buffer]);
+    return 0;
+}
+
+int draw_title(int x,int y,void *buffer) {
+    for(int i = 0; i < 4; i++) {
+        draw_xpm((xpm_map_t) characters_xpm[i],x + (24 * i),y,buffer);
+    }
     return 0;
 }

@@ -10,6 +10,7 @@
 #define MAX_NUM_MESSAGE 1024
 
 extern char* alphabet;
+extern bool in_menu;
 
 /* FOR TESTING PURPOSES */
 int (test_timer)() {
@@ -92,33 +93,36 @@ int (wait_for_esc_key)() {
           if(msg.m_notify.interrupts & BIT(keyboard_irq_set)) {
             kbc_ih();
             int i = retrieve_letter(data);
-            if(i != -1 || data == 0xe){
-              printf("%d\n", i);
-              if(data == 0xe) {
-                index = MAX(index--,0);
-              } else {
-                text[index] = i;
+            if(!in_menu) {
+              if(i != -1 || data == 0xe){
+                printf("%d\n", i);
+                if(data == 0xe) {
+                  index = MAX(index--,0);
+                } else {
+                  text[index] = i;
+                  index++;
+                }
+              } else if (data == 0x1c) {
+                char message[MAX_NUM_MESSAGE] = {'\0'};
+                for(int i = 0; i < index; i++){
+                  message[i] = (char) alphabet[text[i]];
+                }
+                message[index] = '.';
+                message[index + 1] = '\0';
                 index++;
+                for(int j = 0; j < index; j++) {
+                    if(ser_send_poll(COM1_BASE, (char) message[j]) != 0) return 1;
+                }
+                update_message_buffer(message,true);
+                index = 0;
+                counter = 0;
+                sent_username = true;
               }
-            } else if (data == 0x1c) {
-              char message[MAX_NUM_MESSAGE] = {'\0'};
-              for(int i = 0; i < index; i++){
-                message[i] = (char) alphabet[text[i]];
-              }
-              message[index] = '.';
-              message[index + 1] = '\0';
-              index++;
-              for(int j = 0; j < index; j++) {
-                  if(ser_send_poll(COM1_BASE, (char) message[j]) != 0) return 1;
-              }
-              update_message_buffer(message,true);
-              index = 0;
-              counter = 0;
-              sent_username = true;
+
             }
             }
 
-            if(msg.m_notify.interrupts & BIT(ser_irq_set)) {
+            if(msg.m_notify.interrupts & BIT(ser_irq_set) && !in_menu) {
               do {
                   if(util_sys_inb(base_addr + SER_ADDR_IIR,&iir1) != 0) {
                       printf("failed to read iir1\n");
@@ -151,6 +155,16 @@ int (wait_for_esc_key)() {
               x_mouse = MIN(MAX(pp.delta_x + x_mouse,0),x_res - 10);
               y_mouse = MIN(MAX(abs(pp.delta_y - y_mouse),0),y_res - 10);
               struct collision_box exit_box = {x_res * 0.95, y_res * 0.0175, y_res * 0.04, y_res * 0.04};
+              struct collision_box blue_pill = {X_AXIS(0.1),Y_AXIS(0.4),X_AXIS(0.2),Y_AXIS(0.1)};
+              struct collision_box red_pill = {X_AXIS(0.4),Y_AXIS(0.4),X_AXIS(0.2),Y_AXIS(0.1)};
+              if(in_menu && pp.lb) {
+                if(mouse_collision(x_mouse,y_mouse,blue_pill)) {
+                  in_menu = false;
+                }
+                if(mouse_collision(x_mouse,y_mouse,red_pill)) {
+                  done = true;
+                }
+              }
               if(pp.lb && mouse_collision(x_mouse,y_mouse,exit_box)) {
                 done = true;
               }
