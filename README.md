@@ -16,6 +16,9 @@ CRIM is inspired in mIRC, a simple internet relay chat
 <img src="https://cdn.discordapp.com/attachments/1170487049992806412/1246874315324919859/image.png?ex=665df9b2&is=665ca832&hm=467b7b5d1391bb974acc7d918970f0f22cdc65792907e5770b53179761c30a8c&">
 
 
+You can also see a video demo on:
+https://youtu.be/RmljET9zhUA
+
 
 Group members:
 
