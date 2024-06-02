@@ -166,7 +166,7 @@ int (chat_display)() {
 
           if(msg.m_notify.interrupts & BIT(timer_irq_set)){
             timer_int_handler();
-            update_buffer(text, index, counter > 10 && counter < 30 ? true : false, x_mouse, y_mouse);
+            update_buffer(text, index, counter > 10 && counter < 30 ? true : false, x_mouse, y_mouse,pp.rb);
             if(counter > 30) counter = 0;
           }
           break;

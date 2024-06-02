@@ -7,7 +7,7 @@
 #include "../../drivers/mouse/mouse.h"
 
 #define MAX_MESSAGE_NUM 10000
-#define DARK_MODE_HOUR 20
+#define DARK_MODE_HOUR  20
 
 
 char **messages = NULL;
@@ -134,13 +134,13 @@ int draw_xpm(xpm_map_t xpm, u16_t x, u16_t y, void* buffer) {
     return 0;
 }
 
-int update_buffer(int *text, uint index, bool blink,u16_t x_mouse,u16_t y_mouse){
+int update_buffer(int *text, uint index, bool blink,u16_t x_mouse,u16_t y_mouse,bool right_click){
     u16_t x = X_AXIS(0.05);
     u16_t y = Y_AXIS(0.9);
     u8_t next_buffer = (current_buffer + 1) % VG_NUM_BUFFER;
     formatBackground(buffers[next_buffer]);
     if(num_messages > 0) {
-        drawMessages(buffers[next_buffer],blink,x_mouse,y_mouse);
+        drawMessages(buffers[next_buffer],blink,x_mouse,y_mouse,right_click);
     }
     for(uint i = 0; i < index; i++){
         if(text[i] != -1) {
@@ -176,12 +176,12 @@ void update_message_buffer(char *message, bool is_yours) {
         //strcpy(r,is_yours ? username : chatter_username);
         strcpy(r,joined_messages);
 
-        if(username == NULL && is_yours && strlen(r) > 2){
+        if(username == NULL && is_yours && strlen(r) > 1){
             username = r;
             joined_messages[0] = '\0';
             return;
         }
-        if(chatter_username == NULL && !is_yours && strlen(r) > 2){
+        if(chatter_username == NULL && !is_yours && strlen(r) > 1){
             chatter_username = r;
             joined_messages[0] = '\0';
             return;
@@ -224,7 +224,7 @@ void free_message_buffer() {
     free(joined_messages);
 }
 
- int drawMessages(void* buffer,bool blink,u16_t x_mouse, u16_t y_mouse){
+ int drawMessages(void* buffer,bool blink,u16_t x_mouse, u16_t y_mouse,bool right_click){
 
     u16_t x = X_AXIS(0.05);
     u16_t y = Y_AXIS(0.83) - (10 * LINES_PER_MESSAGE(num_messages - 1  < 0 ? 0 : num_messages - 1));
@@ -232,7 +232,7 @@ void free_message_buffer() {
     for(int i = num_messages - 1; i >= 0; i--){
         u16_t initialY = y;
         struct collision_box new_message_box = {x - X_AXIS(0.02),y,X_AXIS(0.01),X_AXIS(0.01)};
-        if(mouse_collision(x_mouse,y_mouse,new_message_box)) seen[i] = true;
+        if(mouse_collision(x_mouse,y_mouse,new_message_box) && right_click) seen[i] = true;
         if(blink && !seen[i]) drawRectangle(x - X_AXIS(0.02),y,X_AXIS(0.01),Y_AXIS(0.01),VG_COLOR_RED,buffer);
         for(uint j = 0; j < strlen(messages[i]); j++){
             int index = check_index(messages[i][j]);
@@ -313,7 +313,7 @@ int formatBackground(void* buffer){
 
     if(username != NULL && chatter_username != NULL){
         draw_names(username, X_AXIS(0.8), Y_AXIS(0.1), buffer);
-        draw_names(chatter_username, X_AXIS(0.8), Y_AXIS(0.1) + (strlen(username) / 7 + 1)*10, buffer);
+        draw_names(chatter_username, X_AXIS(0.8), Y_AXIS(0.1) + MAX((strlen(username) / 7 + 1)*10,12), buffer);
     }
     return 0;
 }
