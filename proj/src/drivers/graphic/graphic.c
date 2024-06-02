@@ -275,9 +275,19 @@ int formatBackground(void* buffer){
     if(!in_menu) {
         drawRectangle(X_AXIS(0.05), Y_AXIS(0.9), X_AXIS(0.65), Y_AXIS(0.05), current_hour > DARK_MODE_HOUR ? VG_COLOR_LIGHT_BLUE : VG_COLOR_GRAY, buffer);  
     } else {
-        draw_title(X_AXIS(0.05),Y_AXIS(0.1),buffer);
-        drawRectangle(X_AXIS(0.1),Y_AXIS(0.4),X_AXIS(0.2),Y_AXIS(0.1),VG_COLOR_BLUE,buffer);
-        drawRectangle(X_AXIS(0.4),Y_AXIS(0.4),X_AXIS(0.2),Y_AXIS(0.1),VG_COLOR_RED,buffer);
+        char *enter = "ENTER";
+        char *exit = "EXIT";
+        draw_title(X_AXIS(0.3),Y_AXIS(0.15),buffer);
+        drawRectangle(X_AXIS(0.1),Y_AXIS(0.3),X_AXIS(0.2),Y_AXIS(0.1),VG_COLOR_BLUE,buffer);
+        for(uint i = 0; i < strlen(enter);i++) {
+            int index = check_index(enter[i]);
+            draw_xpm((xpm_map_t) a_xpm[index],X_AXIS(0.15) + (12 * i),Y_AXIS(0.34),buffer);
+        }
+        drawRectangle(X_AXIS(0.4),Y_AXIS(0.3),X_AXIS(0.2),Y_AXIS(0.1),VG_COLOR_RED,buffer);
+        for(uint i = 0; i < strlen(exit);i++) {
+            int index = check_index(exit[i]);
+            draw_xpm((xpm_map_t) a_xpm[index],X_AXIS(0.46) + (12 * i),Y_AXIS(0.34),buffer);
+        }
     }
 
     if(!in_menu) {
