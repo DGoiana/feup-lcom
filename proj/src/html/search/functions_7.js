@@ -1,0 +1,10 @@
+var searchData=
+[
+  ['kbc_5fih_394',['kbc_ih',['../keyboard_8c.html#aea970a154161a35f6894898a092ed70a',1,'kbc_ih():&#160;keyboard.c'],['../keyboard_8h.html#aea970a154161a35f6894898a092ed70a',1,'kbc_ih():&#160;keyboard.c']]],
+  ['kbc_5fissue_5fcommand_395',['kbc_issue_command',['../keyboard_8c.html#a0f7baa6b445d83dd8a30fd3507f4cde4',1,'kbc_issue_command(uint8_t port, uint8_t message):&#160;keyboard.c'],['../keyboard_8h.html#a0f7baa6b445d83dd8a30fd3507f4cde4',1,'kbc_issue_command(uint8_t port, uint8_t message):&#160;keyboard.c']]],
+  ['kbc_5fread_5fregister_396',['kbc_read_register',['../mouse_8c.html#ab5a728fe780cf93fe2f6cdac1fcaad80',1,'kbc_read_register(uint8_t port, uint8_t *message):&#160;mouse.c'],['../mouse_8h.html#ab5a728fe780cf93fe2f6cdac1fcaad80',1,'kbc_read_register(uint8_t port, uint8_t *message):&#160;mouse.c']]],
+  ['kbc_5fread_5fvalue_397',['kbc_read_value',['../keyboard_8c.html#a01ce04f0a06a614d2e943dd96fce074d',1,'kbc_read_value(uint8_t port, uint8_t *message):&#160;keyboard.c'],['../keyboard_8h.html#a01ce04f0a06a614d2e943dd96fce074d',1,'kbc_read_value(uint8_t port, uint8_t *message):&#160;keyboard.c']]],
+  ['kbc_5fwrite_5fregister_398',['kbc_write_register',['../mouse_8c.html#a538aa8c0763ce23ccadae87d40da7ed0',1,'kbc_write_register(uint8_t port, uint8_t message):&#160;mouse.c'],['../mouse_8h.html#a538aa8c0763ce23ccadae87d40da7ed0',1,'kbc_write_register(uint8_t port, uint8_t message):&#160;mouse.c']]],
+  ['keyboard_5fsubscribe_5fint_399',['keyboard_subscribe_int',['../keyboard_8c.html#ab3da4ab820be8436a4ca872ad3ad40d9',1,'keyboard_subscribe_int(uint8_t *bit_no):&#160;keyboard.c'],['../keyboard_8h.html#ab3da4ab820be8436a4ca872ad3ad40d9',1,'keyboard_subscribe_int(uint8_t *bit_no):&#160;keyboard.c']]],
+  ['keyboard_5funsubscribe_5fint_400',['keyboard_unsubscribe_int',['../keyboard_8c.html#af4dcc45bc3c3312ed4586151e4f214c1',1,'keyboard_unsubscribe_int():&#160;keyboard.c'],['../keyboard_8h.html#af4dcc45bc3c3312ed4586151e4f214c1',1,'keyboard_unsubscribe_int():&#160;keyboard.c']]]
+];

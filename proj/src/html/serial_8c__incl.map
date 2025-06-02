@@ -1,0 +1,9 @@
+<map id="drivers/serial/serial.c" name="drivers/serial/serial.c">
+<area shape="rect" id="node1" title=" " alt="" coords="18,5,177,32"/>
+<area shape="rect" id="node2" href="$serial_8h.html" title=" " alt="" coords="62,80,133,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="56,229,141,256"/>
+<area shape="rect" id="node4" href="$uart_8h.html" title=" " alt="" coords="22,155,82,181"/>
+<area shape="rect" id="node5" href="$queue_8h.html" title=" " alt="" coords="107,155,181,181"/>
+<area shape="rect" id="node6" href="$utils_8h.html" title=" " alt="" coords="205,155,312,181"/>
+<area shape="rect" id="node7" title=" " alt="" coords="223,229,294,256"/>
+</map>

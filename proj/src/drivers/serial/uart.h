@@ -1,0 +1,103 @@
+#include <lcom/lcf.h>
+
+#define SER_MAX_BIT_RATE 115200
+#define SER_MAX_TRIES 3
+#define DELAY_US 20000
+#define QUEUE_SIZE 8
+
+// Irq Lines
+#define IRQ_COM1 0x04
+#define IRQ_COM2 0x03
+
+// Base Addresses
+#define SER_BASE_ADDR_1 0x3F8
+#define SE_BASE_ADDR_2 0x2F8
+#define SER_MAX_STRING_SIZE 1024
+
+// Serial Port Registers
+#define SER_ADDR_RX_BUF 0x00
+#define SER_ADDR_TX_BUF 0x00
+
+#define SER_ADDR_IER 0x01
+
+#define SER_ADDR_IIR 0x02
+#define SER_ADDR_FCR 0x02
+#define SER_ADDR_LCR 0x03
+#define SER_ADDR_LSR 0x05
+
+#define SER_ADDR_DL_LSB 0x00
+#define SER_ADDR_DL_MSB 0x01
+
+// IRQ's for Serial Ports
+
+#define SER_IRQ_0 0x04
+#define SER_IRQ_1 0x03
+
+
+// LCR BITS
+#define SER_LCR_WORD_LENGTH_5 0x00
+#define SER_LCR_WORD_LENGTH_6 BIT(0)
+#define SER_LCR_WORD_LENGTH_7 BIT(1)
+#define SER_LCR_WORD_LENGTH_8 BIT(0) | BIT(1)
+#define SER_LCR_TWO_STOP_BITS BIT(2)
+#define SER_LCR_PARITY_NONE 0x00
+#define SER_LCR_PARITY_ODD BIT(3)
+#define SER_LCR_PARITY_EVEN BIT(3) | BIT(4)
+#define SER_LCR_PARITY_ONE BIT(3) | BIT(5)
+#define SER_LCR_PARITY_ZERO BIT(3) | BIT(4) | BIT(5)
+#define SER_LCR_SEL_DL BIT(7)
+
+// LSR BITS
+#define SER_LSR_RX_RDY BIT(0)
+#define SER_LSR_OVERRUN_ERR BIT(1)
+#define SER_LSR_PARITY_ERR BIT(2)
+#define SER_LSR_FRAMING_ERR BIT(3)
+#define SER_LSR_TX_RDY BIT(5)
+
+
+// IER
+#define SER_IER_ENABLE_RX_INT BIT(0)
+#define SER_IER_ENABLE_TX_EMPTY_INT BIT(1)
+#define SER_IER_ENABLE_RX_LSR_INT BIT(2) // FOR ERRORS
+
+
+// IRR
+#define SER_IIR_NOT_PENDING BIT(0)
+#define SER_IIR_MODEM_ST 0x00
+#define SER_IIR_TX_EMPTY BIT(1)
+#define SER_IIR_CHAR_TIMEOUT BIT(3)
+#define SER_IIR_RX_AVAILABLE BIT(2)
+#define SER_IIR_LSR BIT(1) | BIT(2)
+#define SER_IIR_NO_FIFO BIT(0)
+#define SER_IIR_UNUSABLE_FIFO BIT(7)
+#define SER_IIR_ENABLED_FIFO BIT(7) | BIT(6)
+
+// FCR
+#define SER_FCR_ENABLE_FIFO BIT(0)
+#define SER_FCR_CLEAR_RX_FIFO BIT(1)
+#define SER_FCR_CREAR_TX_FIFO BIT(2)
+#define SER_FCR_TR_LEVEL_1 BIT(0)
+#define SER_FCR_TR_LEVEL_4 BIT(6)
+#define SER_FCR_TR_LEVEL_8 BIT(7)
+#define SER_FCR_TR_LEVEL_14 BIT(7) | BIT(6)
+
+
+// CONFIG OPTIONS 
+
+#define COM1_BASE 0x3F8
+#define COM2_BASE 0x2F8
+
+#define WORD_LENGTH_5 5
+#define WORD_LENGTH_6 6
+#define WORD_LENGTH_7 7
+#define WORD_LENGTH_8 8
+
+#define NUM_STOP_1 1
+#define NUM_STOP_2 2
+
+#define PARITY_NONE -1
+#define PARITY_EVEN 0
+#define PARITY_ODD 1
+
+#define BIT_RATE 100
+#define VALID_RATE(rate) ((rate)%SER_MAX_BIT_RATE == 0)

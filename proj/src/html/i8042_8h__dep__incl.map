@@ -1,0 +1,11 @@
+<map id="drivers/mouse/i8042.h" name="drivers/mouse/i8042.h">
+<area shape="rect" id="node1" title=" " alt="" coords="209,5,376,32"/>
+<area shape="rect" id="node2" href="$chat_8h.html" title=" " alt="" coords="236,155,331,181"/>
+<area shape="rect" id="node5" href="$keyboard_8h.html" title=" " alt="" coords="48,80,255,107"/>
+<area shape="rect" id="node7" href="$mouse_8h.html" title=" " alt="" coords="349,80,524,107"/>
+<area shape="rect" id="node3" href="$chat_8c.html" title=" " alt="" coords="185,229,278,256"/>
+<area shape="rect" id="node4" href="$main_8c.html" title=" " alt="" coords="302,229,369,256"/>
+<area shape="rect" id="node6" href="$keyboard_8c.html" title=" " alt="" coords="5,155,212,181"/>
+<area shape="rect" id="node8" href="$graphic_8c.html" title=" " alt="" coords="355,155,537,181"/>
+<area shape="rect" id="node9" href="$mouse_8c.html" title=" " alt="" coords="561,155,736,181"/>
+</map>
