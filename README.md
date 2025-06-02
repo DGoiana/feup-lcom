@@ -22,6 +22,5 @@ https://youtu.be/RmljET9zhUA
 
 Group members:
 
-1. Alexandre Silva up202206633@fe.up.pt
-2. Diogo Martins up202207944@fe.up.pt
-3. Rubem Neto up202207086@fe.up.pt
+1. Diogo Martins up202207944@fe.up.pt
+2. Rubem Neto up202207086@fe.up.pt
