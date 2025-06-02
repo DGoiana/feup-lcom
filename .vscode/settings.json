@@ -4,6 +4,8 @@
         "*.embeddedhtml": "html",
         "serial.h": "c",
         "uart.h": "c",
+        "i8254.h": "c",
+        "vg.h": "c",
         "lcf.h": "c",
         "serial_tests.h": "c",
         "mouse.h": "c",

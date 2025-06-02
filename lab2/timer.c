@@ -29,7 +29,7 @@ int (timer_set_frequency)(uint8_t timer, uint32_t freq) {
   
   printf("conf : %x\n",conf);
   if(sys_outb(TIMER_CTRL,(uint32_t) conf) != 0){
-
+      return 1;
   }
   
   uint16_t div = TIMER_FREQ / freq;
